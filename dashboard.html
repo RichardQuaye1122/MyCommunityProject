@@ -1,93 +1,175 @@
-<!doctype html>
-<html lang="en">
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>MyCommunity — Report Local Issues</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MyCommunity — Dashboard</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
   <style>
-    html { scroll-behavior: smooth; }
-    .hero-bg {
-      background-image: linear-gradient(120deg, rgba(7,89,133,0.6), rgba(14,165,233,0.35)), url('https://images.unsplash.com/photo-1520975910334-4fef9a0d9d1f?q=80&w=1920&auto=format&fit=crop');
-      background-size: cover;
-      background-position: center;
+    .card-hover {
+      transition: all 0.4s ease;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08);
     }
-    .status-badge { font-weight:600; font-size:.75rem }
+    .card-hover:hover {
+      transform: translateY(-12px);
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+    }
+    .progress {
+      height: 10px;
+      background: linear-gradient(90deg, #0ea5e9 0%, #7dd3fc 100%);
+      border-radius: 999px;
+    }
   </style>
 </head>
-<body>
+<body class="bg-gray-50 text-gray-800">
 
-     <!-- Header -->
+  <!-- Header (same style as your main site) -->
   <header class="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-gray-200">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6">
-      <div class="flex items-center justify-between h-16">
-        <div class="flex items-center space-x-3">
-          <img src="" class="w-11 h-11 rounded-full object-cover" />
-          <div>
-            <a class="font-semibold text-lg text-sky-700">MyCommunity</a>
-            <div class="text-xs text-gray-500 -mt-0.5">Community-driven reporting</div>
-          </div>
-        </div>
-
-        <nav class="hidden md:flex items-center space-x-6">
-          <a href="/pix.html" class="text-gray-700 hover:text-sky-600">Home</a>
-          <a href="/dashboard.html" class="text-gray-700 hover:text-sky-600">Dashboard</a>
-          <a href="#reports" class="text-gray-700 hover:text-sky-600">Report List</a>
-          <a href="#join" class="ml-2 px-4 py-2 bg-sky-600 hover:bg-sky-700 text-white rounded-lg shadow-sm">Join Now</a>
-        </nav>
-
-        <div class="md:hidden">
-          <button id="mobileMenuBtn" aria-expanded="false">
-            <svg id="hamburgerIcon" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8h16M4 16h16"/>
-            </svg>
-          </button>
+    <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+      <div class="flex items-center gap-4">
+        <img src="images/logo.png" alt="MyCommunity" class="w-12 h-12 rounded-full ring-4 ring-sky-100">
+        <div>
+          <h1 class="text-2xl font-bold text-sky-700">MyCommunity</h1>
+          <p class="text-xs text-gray-500">Community-driven reporting</p>
         </div>
       </div>
-    </div>
-
-    <div id="mobileMenu" class="md:hidden hidden border-t border-gray-100">
-      <div class="px-4 pt-4 pb-6 space-y-3">
-        <a href="#home" class="block px-3 py-2 rounded-md text-gray-700">Home</a>
-        <a href="#dashboard" class="block px-3 py-2 text-gray-700">Dashboard</a>
-        <a href="#reports" class="block px-3 py-2 text-gray-700">Report List</a>
-        <a href="#join" class="block mt-2 px-4 py-2 bg-sky-600 text-white rounded-lg">Join Now</a>
-      </div>
+      <nav class="hidden md:flex items-center gap-8 text-gray-700">
+        <a href="/" class="hover:text-sky-600 font-medium">Home</a>
+        <a href="/dashboard.html" class="text-sky-600 font-semibold">Dashboard</a>
+        <a href="/#reports" class="hover:text-sky-600 font-medium">Reports</a>
+        <a href="/#submit" class="px-5 py-2.5 bg-sky-600 text-white rounded-xl font-medium hover:bg-sky-700 shadow-md">
+          Submit Report
+        </a>
+      </nav>
     </div>
   </header>
 
-     <!-- Dashboard -->
-  <section id="dashboard" class="py-20 bg-gradient-to-b from-blue-50 to-white">
-    <div class="max-w-7xl mx-auto px-6">
-      <h2 class="text-4xl font-bold mb-12 text-center">Dashboard Overview</h2>
+  <!-- Dashboard Hero -->
+  <section class="pt-24 pb-12 bg-gradient-to-b from-sky-50 to-white">
+    <div class="max-w-7xl mx-auto px-6 text-center">
+      <h2 class="text-5xl font-extrabold text-gray-900 mb-4">
+        Community Dashboard
+      </h2>
+      <p class="text-xl text-gray-600 max-w-2xl mx-auto">
+        Live overview of all reported issues, progress, and community impact
+      </p>
+    </div>
+  </section>
 
-      <div class="grid md:grid-cols-4 gap-6">
-        <div class="bg-white rounded-xl shadow-lg p-6 flex flex-col items-center">
-          <div class="text-4xl text-blue-600 mb-2">📋</div>
-          <div class="text-sm text-gray-600 mb-2">Total Reports</div>
-          <div class="text-3xl font-bold">127</div>
-          <div class="text-sm text-green-600 mt-2">↑ 12% this month</div>
-        </div>
+  <!-- Stats Grid -->
+  <section class="max-w-7xl mx-auto px-6 -mt-10 mb-16">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+      
+      <div class="bg-white rounded-3xl p-8 card-hover text-center border border-gray-100">
+        <div class="text-5xl mb-4">📋</div>
+        <p class="text-gray-600 text-sm font-medium uppercase tracking-wider">Total Reports</p>
+        <p class="text-5xl font-black text-gray-900 mt-3">1,427</p>
+        <p class="text-green-600 text-sm font-semibold mt-3">↑ 23% this month</p>
+      </div>
 
-        <div class="bg-white rounded-xl shadow-lg p-6 flex flex-col items-center">
-          <div class="text-4xl text-orange-500 mb-2">⏳</div>
-          <div class="text-sm text-gray-600 mb-2">In Progress</div>
-          <div class="text-3xl font-bold text-orange-500">34</div>
+      <div class="bg-white rounded-3xl p-8 card-hover text-center border border-gray-100">
+        <div class="text-5xl mb-4">⏳</div>
+        <p class="text-gray-600 text-sm font-medium uppercase tracking-wider">In Progress</p>
+        <p class="text-5xl font-black text-orange-600 mt-3">312</p>
+        <div class="mt-5 w-full bg-gray-200 rounded-full">
+          <div class="progress w-7/12"></div>
         </div>
+      </div>
 
-        <div class="bg-white rounded-xl shadow-lg p-6 flex flex-col items-center">
-          <div class="text-4xl text-green-600 mb-2">✅</div>
-          <div class="text-sm text-gray-600 mb-2">Resolved</div>
-          <div class="text-3xl font-bold text-green-600">89</div>
-        </div>
+      <div class="bg-white rounded-3xl p-8 card-hover text-center border border-gray-100">
+        <div class="text-5xl mb-4">✅</div>
+        <p class="text-gray-600 text-sm font-medium uppercase tracking-wider">Resolved</p>
+        <p class="text-5xl font-black text-green-600 mt-3">1,089</p>
+        <p class="text-green-600 text-lg font-bold mt-3">89.2% success rate</p>
+      </div>
 
-        <div class="bg-white rounded-xl shadow-lg p-6 flex flex-col items-center">
-          <div class="text-4xl text-blue-600 mb-2">👤</div>
-          <div class="text-sm text-gray-600 mb-2">Your Reports</div>
-          <div class="text-3xl font-bold text-blue-600">8</div>
-        </div>
+      <div class="bg-white rounded-3xl p-8 card-hover text-center border border-gray-100">
+        <div class="text-5xl mb-4">🏆</div>
+        <p class="text-gray-600 text-sm font-medium uppercase tracking-wider">Your Reports</p>
+        <p class="text-5xl font-black text-sky-600 mt-3">27</p>
+        <p class="text-sm text-gray-600 mt-3">12 resolved • Top 5% contributor</p>
       </div>
     </div>
   </section>
+
+  <!-- Activity + Recent Reports -->
+  <section class="max-w-7xl mx-auto px-6 mb-20">
+    <div class="grid lg:grid-cols-3 gap-10">
+
+      <!-- Activity Chart Area -->
+      <div class="lg:col-span-2 bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden">
+        <div class="p-8 border-b border-gray-100">
+          <h3 class="text-2xl font-bold text-gray-900">Report Activity – Last 30 Days</h3>
+        </div>
+        <div class="p-8 h-96 flex items-center justify-center bg-gradient-to-br from-sky-50 to-white">
+          <div class="text-center">
+            <i class="fas fa-chart-area text-7xl text-sky-200 mb-6"></i>
+            <p class="text-lg text-gray-500">Interactive chart coming soon<br><span class="text-sm">(Chart.js / ApexCharts ready)</span></p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Reports -->
+      <div class="bg-white rounded-3xl shadow-xl border border-gray-100 p-8">
+        <h3 class="text-2xl font-bold text-gray-900 mb-6">Recent Reports</h3>
+        <div class="space-y-6">
+
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-4">
+              <div class="w-14 h-14 bg-orange-100 rounded-2xl flex items-center justify-center">
+                <i class="fas fa-road text-orange-600 text-xl"></i>
+              </div>
+              <div>
+                <p class="font-semibold">Pothole – Main Street</p>
+                <p class="text-sm text-gray-500">2 hours ago</p>
+              </div>
+            </div>
+            <span class="px-4 py-1.5 bg-orange-100 text-orange-700 rounded-full text-xs font-semibold">In Progress</span>
+          </div>
+
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-4">
+              <div class="w-14 h-14 bg-green-100 rounded-2xl flex items-center justify-center">
+                <i class="fas fa-lightbulb text-green-600 text-xl"></i>
+              </div>
+              <div>
+                <p class="font-semibold">Streetlight Fixed</p>
+                <p class="text-sm text-gray-500">6 hours ago</p>
+              </div>
+            </div>
+            <span class="px-4 py-1.5 bg-green-100 text-green-700 rounded-full text-xs font-semibold">Resolved</span>
+          </div>
+
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-4">
+              <div class="w-14 h-14 bg-blue-100 rounded-2xl flex items-center justify-center">
+                <i class="fas fa-tint text-blue-600 text-xl"></i>
+              </div>
+              <div>
+                <p class="font-semibold">Drainage Blockage</p>
+                <p class="text-sm text-gray-500">1 day ago</p>
+              </div>
+            </div>
+            <span class="px-4 py-1.5 bg-blue-100 text-blue-700 rounded-full text-xs font-semibold">Pending</span>
+          </div>
+
+        </div>
+
+        <a href="/#reports" class="block text-center mt-8 py-3 bg-sky-600 text-white rounded-xl font-semibold hover:bg-sky-700 transition">
+          View All Reports →
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="max-w-4xl mx-auto px-6 text-center mb-20">
+    <a href="/#submit" class="inline-flex items-center gap-4 px-10 py-5 bg-sky-600 text-white text-xl font-bold rounded-2xl shadow-xl hover:shadow-sky-300/50 transform hover:scale-105 transition duration-300">
+      <i class="fas fa-plus-circle text-3xl"></i>
+      Submit a New Report
+    </a>
+  </section>
+
 </body>
 </html>
