@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Live Map – MyCommunity</title>
+
+  <!-- Tailwind + DaisyUI -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" />
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.css"/>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css"/>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.locatecontrol@0.79.0/dist/L.Control.Locate.min.css" />
+
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      font-family: 'Inter', sans-serif;
+    }
+    #map {
+  position: absolute;
+  top: 5rem; /* height of your header-bar */
+  left: 0;
+  width: 100%;
+  bottom: 0; /* fill remaining height */
+  z-index: 1;
+}
+
+
+    /* Glass Header - Always on top */
+    .header-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      background: rgba(0, 0, 0, 0.65);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      z-index: 1000;
+      padding: 1rem 0;
+    }
+
+    /* Floating + button - Always on top */
+    .fab {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      z-index: 1000;
+    }
+
+    /* Fix dark mode map background */
+    html[data-theme="dark"] .leaflet-container { background: #0f172a !important; }
+  </style>
+</head>
+
+<body>
+
+  <!-- GLASS HEADER – ALWAYS VISIBLE -->
+  <div class="header-bar text-white ">
+    <div class="flex justify-between items-center px-4 max-w-7xl mx-auto">
+      <a href="/" class="btn btn-circle btn-ghost hover:bg-white/20 transition">
+        <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/>
+        </svg>
+      </a>
+
+      <div class="text-center">
+        <h1 class="text-2xl md:text-3xl font-bold">Live Issues Map</h1>
+        <p class="text-sm opacity-90 hidden sm:block">Tap markers for details</p>
+      </div>
+
+      <label class="swap swap-rotate btn btn-circle btn-ghost hover:bg-white/20">
+        <input type="checkbox" class="theme-controller" id="theme-toggle" />
+        <svg class="swap-on fill-current w-6 h-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+          <path d="M12 6.5A5.5 5.5 0 1 0 17.5 12 5.51 5.51 0 0 0 12 6.5Zm0 9A3.5 3.5 0 1 1 15.5 12 3.5 3.5 0 0 1 12 15.5Z"/>
+        </svg>
+        <svg class="swap-off fill-current w-6 h-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+          <path d="M21.64 13a1 1 0 0 0-1.05-.14 8.05 8.05 0 0 1-3.37.73A8.15 8.15 0 0 1 9.08 5.49a8.59 8.59 0 0 1 .25-2 1 1 0 0 0-1.33-1.13A10.14 10.14 0 1 0 22 14.05 1 1 0 0 0 21.64 13Z"/>
+        </svg>
+      </label>
+    </div>
+  </div>
+
+  <!-- Floating Report Button -->
+  <button onclick="document.getElementById('report_modal').showModal()" class="fab btn btn-circle btn-lg shadow-2xl btn-primary text-white text-3xl hover:scale-110 transition">
+    +
+  </button>
+
+  <!-- Map -->
+  <div id="map"></div>
+
+  <!-- Report Modal -->
+  <dialog id="report_modal" class="modal modal-bottom sm:modal-middle">
+    <div class="modal-box">
+      <h3 class="font-bold text-2xl mb-6">Report New Issue</h3>
+      <form class="space-y-5">
+        <input type="text" placeholder="Title..." class="input input-bordered w-full" required />
+        <textarea class="textarea textarea-bordered w-full h-32" placeholder="Describe the issue..." required></textarea>
+        <div class="alert alert-info text-sm">Location will be auto-detected</div>
+        <div class="flex gap-3">
+          <button type="submit" class="btn btn-primary flex-1">Submit Report</button>
+          <button type="button" onclick="document.getElementById('report_modal').close()" class="btn btn-ghost">Cancel</button>
+        </div>
+      </form>
+      <form method="dialog">
+        <button class="btn btn-circle btn-ghost absolute top-4 right-4">X</button>
+      </form>
+    </div>
+  </dialog>
+
+  <!-- Scripts -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js"></script>
+  <script src="https://unpkg.com/leaflet.locatecontrol@0.79.0/dist/L.Control.Locate.min.js"></script>
+
+  <!-- MAP INITIALIZATION (with bulletproof fixes) -->
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      // === THEME TOGGLE ===
+      const toggle = document.getElementById("theme-toggle");
+      const html = document.documentElement;
+      const saved = localStorage.getItem("theme");
+      const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+
+      if (saved) {
+        html.setAttribute("data-theme", saved);
+        if (toggle) toggle.checked = saved === "dark";
+      } else if (prefersDark) {
+        html.setAttribute("data-theme", "dark");
+        if (toggle) toggle.checked = true;
+      }
+
+      if (toggle) {
+        toggle.addEventListener("change", () => {
+        const theme = toggle.checked ? "dark" : "light";
+        html.setAttribute("data-theme", theme);
+        localStorage.setItem("theme", theme);
+      });
+      }
+
+      // === MAP SETUP ===
+      const map = L.map('map', {
+        zoomControl: true,
+        attributionControl: true
+      }).setView([5.6037, -0.1870], 13);
+
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap contributors'
+      }).addTo(map);
+
+      // CRITICAL: Force map to recalculate size after DOM is ready
+      setTimeout(() => map.invalidateSize(true), 300);
+
+      // Also invalidate on window resize (mobile keyboards, etc.)
+      window.addEventListener('resize', () => map.invalidateSize());
+
+      const markers = L.markerClusterGroup();
+
+      const reports = [
+        {lat:5.6037,lng:-0.1870,title:"Deep Pothole",desc:"Near Accra Mall",status:"warning",up:142,t:"2d"},
+        {lat:5.6140,lng:-0.2050,title:"Broken Street Light",desc:"Very dark",status:"error",up:89,t:"5h"},
+        {lat:5.5910,lng:-0.1790,title:"Illegal Dumping",desc:"Growing pile",status:"error",up:67,t:"1d"},
+        {lat:5.5700,lng:-0.2100,title:"Flooded Road",desc:"Cars stuck",status:"warning",up:201,t:"3d"},
+        {lat:5.6300,lng:-0.1700,title:"Missing Manhole",desc:"Dangerous!",status:"error",up:312,t:"now"},
+      ];
+
+      reports.forEach(r => {
+        const badge = r.status === "error" ? "bg-red-500 text-white" : "bg-yellow-500 text-black";
+        const marker = L.marker([r.lat, r.lng], {
+          icon: L.divIcon({
+            html: `<div class="bg-white dark:bg-gray-800 rounded-full w-11 h-11 flex items-center justify-center shadow-2xl border-4 border-white dark:border-gray-900">
+                      <span class="text-3xl font-bold text-red-600">!</span></div>`,
+            iconSize: [44,44],
+            iconAnchor: [22,44]
+          })
+        }).bindPopup(`
+          <div class="p-4 min-w-64">
+            <h3 class="font-bold text-lg">${r.title}</h3>
+            <p class="text-sm opacity-80 mt-1">${r.desc}</p>
+            <div class="flex justify-between items-center mt-4 text-xs font-medium">
+              <span class="px-3 py-1.5 rounded-full ${badge}">${r.status==='error'?'Urgent':'In Progress'}</span>
+              <span>${r.t} • ${r.up} Upvotes</span>
+            </div>
+          </div>
+        `);
+        markers.addLayer(marker);
+      });
+
+      map.addLayer(markers);
+
+      // My Location Button
+      L.control.locate({
+        position: 'topleft',
+        strings: { title: "Show my location" },
+        flyTo: true
+      }).addTo(map);
+    });
+  </script>
+</body>
+</html>

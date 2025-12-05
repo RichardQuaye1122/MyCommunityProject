@@ -1,258 +1,238 @@
-<!doctype html>
-<html lang="en">
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth" data-theme="light">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>MyCommunity — Report Local Issues</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MyCommunity – Fix Your Neighborhood Together</title>
+
+  <!-- Tailwind + DaisyUI -->
   <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" type="text/css" />
+
+  <!-- Fonts & Icons -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+
+  <!-- AOS Animation -->
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+
   <style>
-    html { scroll-behavior: smooth; }
+    body { font-family: 'Inter', sans-serif; }
+    html { transition: background-color 0.3s ease, color 0.3s ease; }
+
     .hero-bg {
-      background-image: linear-gradient(120deg, rgba(7,89,133,0.6), rgba(14,165,233,0.35)), url('https://images.unsplash.com/photo-1520975910334-4fef9a0d9d1f?q=80&w=1920&auto=format&fit=crop');
-      background-size: cover;
-      background-position: center;
+      background: linear-gradient(135deg, #0ea5e9 0%, #1e40af 100%),
+                  url('https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?q=80&w=2400') center/cover no-repeat;
     }
-    .status-badge { font-weight:600; font-size:.75rem }
+    #homeMap {
+  height: 400px;
+  max-width: 800px; /* constrain width */
+  margin: 0 auto;   /* center it */
+  border-radius: 1.5rem;
+  overflow: hidden;
+}
+
+    .report-card:hover { transform: translateY(-10px); transition: all 0.3s ease; }
   </style>
 </head>
 
-<body class="antialiased text-gray-800 bg-gray-50">
+<body class="min-h-screen bg-base-100 text-base-content">
 
-  <!-- Header -->
-  <header class="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-gray-200">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6">
-      <div class="flex items-center justify-between h-16">
-        <div class="flex items-center space-x-3">
-          <img src="images/logo.png" class="w-11 h-11 rounded-full object-cover" />
-          <div>
-            <a class="font-semibold text-lg text-sky-700">MyCommunity</a>
-            <div class="text-xs text-gray-500 -mt-0.5">Community-driven reporting</div>
-          </div>
-        </div>
+  <!-- Dark Mode Toggle (Top Right) -->
+  <div class="fixed top-4 right-4 z-50">
+    <label class="swap swap-rotate btn btn-circle btn-ghost">
+      <input type="checkbox" class="theme-controller" id="theme-toggle" />
+      <!-- Sun Icon (Light Mode) -->
+      <svg class="swap-on fill-current w-7 h-7" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+        <path d="M5.64,17l-.71.71a1,1,0,0,0,0,1.41,1,1,0,0,0,1.41,0l.71-.71A1,1,0,0,0,5.64,17ZM5,12a1,1,0,0,0-1-1H3a1,1,0,0,0,0,2H4A1,1,0,0,0,5,12Zm7-7a1,1,0,0,0,1-1V3a1,1,0,0,0-2,0V4A1,1,0,0,0,12,5ZM5.64,7.05a1,1,0,0,0,.7.29,1,1,0,0,0,.71-.29,1,1,0,0,0,0-1.41l-.71-.71A1,1,0,0,0,4.93,6.34Zm12,.29a1,1,0,0,0,.7-.29l.71-.71a1,1,0,1,0-1.41-1.41L17,5.64a1,1,0,0,0,0,1.41A1,1,0,0,0,17.66,7.34ZM21,11H20a1,1,0,0,0,0,2h1a1,1,0,0,0,0-2Zm-9,8a1,1,0,0,0-1,1v1a1,1,0,0,0,2,0V20A1,1,0,0,0,12,19ZM18.36,17A1,1,0,0,0,17,18.36l.71.71a1,1,0,0,0,1.41,0,1,1,0,0,0,0-1.41ZM12,6.5A5.5,5.5,0,1,0,17.5,12,5.51,5.51,0,0,0,12,6.5Zm0,9A3.5,3.5,0,1,1,15.5,12,3.5,3.5,0,0,1,12,15.5Z"/>
+      </svg>
+      <!-- Moon Icon (Dark Mode) -->
+      <svg class="swap-off fill-current w-7 h-7" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+        <path d="M21.64,13a1,1,0,0,0-1.05-.14,8.05,8.05,0,0,1-3.37.73A8.15,8.15,0,0,1,9.08,5.49a8.59,8.59,0,0,1,.25-2A1,1,0,0,0,8,2.36,10.14,10.14,0,1,0,22,14.05,1,1,0,0,0,21.64,13Zm-9.5,6.69A8.14,8.14,0,0,1,7.08,5.22v.27A10.15,10.15,0,0,0,17.22,15.63a9.79,9.79,0,0,0,2.1-.22A8.11,8.11,0,0,1,12.14,19.73Z"/>
+      </svg>
+    </label>
+  </div>
 
-        <nav class="hidden md:flex items-center space-x-6">
-          <a href="/index.html" class="text-gray-700 hover:text-sky-600">Home</a>
-          <a href="/dashboard.html" class="text-gray-700 hover:text-sky-600">Dashboard</a>
-          <a href="#reports" class="text-gray-700 hover:text-sky-600">Report List</a>
-          <a href="#join" class="ml-2 px-4 py-2 bg-sky-600 hover:bg-sky-700 text-white rounded-lg shadow-sm">Join Now</a>
-        </nav>
+  <!-- Floating Report Button -->
+  <button onclick="document.getElementById('report_modal').showModal()" 
+    class="fixed bottom-6 right-6 z-50 btn btn-circle btn-lg shadow-2xl btn-primary text-white text-3xl">
+    +
+  </button>
 
-        <div class="md:hidden">
-          <button id="mobileMenuBtn" aria-expanded="false">
-            <svg id="hamburgerIcon" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8h16M4 16h16"/>
-            </svg>
+  <!-- Navbar -->
+  <div class="navbar bg-base-100/95 backdrop-blur sticky top-0 z-40 shadow-lg">
+    <div class="navbar-start">
+      <a href="/" class="flex items-center gap-3 px-4">
+        <img src="https://api.dicebear.com/7.x/shapes/svg?seed=MyCommunity" class="w-10 h-10 rounded-full" alt="logo"/>
+        <span class="font-bold text-xl text-primary">MyCommunity</span>
+      </a>
+    </div>
+    <div class="navbar-center hidden lg:flex">
+      <ul class="menu menu-horizontal px-1 font-medium">
+        <li><a href="#home">Home</a></li>
+        <li><a href="/map.html">Map</a></li>
+        <li><a href="#reports">Reports</a></li>
+        <li><a href="dashboard.html">Dashboard</a></li>
+      </ul>
+    </div>
+    <div class="navbar-end">
+      <div class="dropdown dropdown-end lg:hidden">
+        <label tabindex="0" class="btn btn-ghost btn-circle">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+        </label>
+        <ul tabindex="0" class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52 mt-3">
+          <li><a href="#home">Home</a></li>
+          <li><a href="#map">Map</a></li>
+          <li><a href="#reports">Reports</a></li>
+          <li><a href="dashboard.html">Dashboard</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Hero Section -->
+  <section id="home" class="hero min-h-screen hero-bg relative">
+    <div class="hero-overlay bg-black/60"></div>
+    <div class="hero-content text-center py-32 relative z-10" data-aos="fade-up">
+      <div class="max-w-4xl text-white">
+        <h1 class="text-5xl md:text-7xl font-extrabold leading-tight">
+          Your Neighborhood.<br><span class="text-sky-300">Fixed Faster.</span>
+        </h1>
+        <p class="text-xl mt-6 opacity-90">Report issues. Track fixes. See real change.</p>
+        <div class="mt-10 flex flex-col sm:flex-row gap-5 justify-center">
+          <button onclick="document.getElementById('report_modal').showModal()" 
+            class="btn btn-lg bg-white text-primary hover:bg-gray-100 font-bold">
+            Report Now
           </button>
-        </div>
-      </div>
-    </div>
-
-    <div id="mobileMenu" class="md:hidden hidden border-t border-gray-100">
-      <div class="px-4 pt-4 pb-6 space-y-3">
-        <a href="#home" class="block px-3 py-2 rounded-md text-gray-700">Home</a>
-        <a href="#dashboard" class="block px-3 py-2 text-gray-700">Dashboard</a>
-        <a href="#reports" class="block px-3 py-2 text-gray-700">Report List</a>
-        <a href="#join" class="block mt-2 px-4 py-2 bg-sky-600 text-white rounded-lg">Join Now</a>
-      </div>
-    </div>
-  </header>
-
-  <!-- Hero -->
-  <section class="relative min-h-[520px]">
-    <img src="images/8065b825efa672a96833fd13ded88df2.jpg" class="absolute inset-0 w-full h-full object-cover" />
-    <div class="absolute inset-0 bg-gradient-to-r from-sky-900/60 via-sky-700/40 to-transparent"></div>
-
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 relative z-10 flex items-center min-h-[520px]">
-      <div class="grid lg:grid-cols-2 gap-10 items-center w-full text-white">
-        <div>
-          <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold leading-tight drop-shadow">
-            Report Community Issues & See Real Progress in Days
-          </h1>
-          <p class="mt-4 text-lg opacity-95">
-            Submit issues, track updates, and collaborate with neighbors and authorities.
-          </p>
-          <div class="mt-6 flex flex-wrap gap-3">
-            <a href="#submit" class="px-5 py-3 bg-white text-sky-700 rounded-lg font-medium shadow">Submit Your First Report</a>
-            <a href="#dashboard" class="px-5 py-3 border border-white/70 rounded-lg font-medium">View Dashboard</a>
-          </div>
+          <a href="#map" class="btn btn-lg btn-outline text-white border-white hover:bg-white hover:text-primary">
+            View Live Map
+          </a>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- 3 Steps -->
-  <section id="how" class="max-w-7xl mx-auto px-4 sm:px-6 py-16 bg-green-50 ">
-    <div class="text-center">
-      <h2 class="text-2xl font-bold">How it works</h2>
-      <p class="mt-2 text-gray-600 max-w-2xl mx-auto">Simple 3-step system.</p>
+<!-- Live Map Section -->
+<section id="map" class="py-20 bg-base-200">
+  <div class="max-w-7xl mx-auto px-6">
+    <h2 class="text-4xl font-bold text-center mb-12" data-aos="fade-up">
+      Live Issues Near You
+    </h2>
+
+    <!-- Map Container -->
+    <div 
+      class="mx-auto max-w-4xl rounded-2xl shadow-2xl overflow-hidden" 
+      data-aos="fade-up" 
+      data-aos-delay="100"
+    >
+      <div id="homeMap" class="w-full h-96 rounded-2xl"></div>
     </div>
 
-    <div class="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-      <article class="bg-white rounded-2xl p-6 shadow hover:shadow-lg">
-        <img src="images/IMG_6814-removebg-preview.png" class="w-14 h-14" />
-        <h3 class="mt-4 text-lg font-semibold">1. Report the issue</h3>
-        <p class="mt-2 text-gray-600">Describe the issue and add photos.</p>
-      </article>
-
-      <article class="bg-white rounded-2xl p-6 shadow hover:shadow-lg">
-        <img src="images/IMG_6812-removebg-preview.png" class="w-14 h-14" />
-        <h3 class="mt-4 text-lg font-semibold">2. Track progress</h3>
-        <p class="mt-2 text-gray-600">Receive real-time updates.</p>
-      </article>
-
-      <article class="bg-white rounded-2xl p-6 shadow hover:shadow-lg">
-        <img src="images/IMG_6813-removebg-preview.png" class="w-14 h-14" />
-        <h3 class="mt-4 text-lg font-semibold">3. Engage & collaborate</h3>
-        <p class="mt-2 text-gray-600">Work with neighbors and authorities.</p>
-      </article>
+    <div class="text-center mt-10">
+      <a href="map.html" class="btn btn-primary btn-outline">Open Full Map →</a>
     </div>
-  </section>
+  </div>
+</section>
 
-  <!-- Features -->
-  <section id="features" class="bg-white/60">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-16 grid lg:grid-cols-2 gap-10">
-      <div>
-        <h2 class="text-3xl font-bold">Your Voice Matters</h2>
-        <p class="mt-4 text-gray-600 max-w-xl">
-          Report problems, track progress, confirm fixes.
-        </p>
 
-        <div class="mt-8 grid sm:grid-cols-3 gap-4">
-          <div class="p-4 rounded-lg bg-sky-50">
-            <div class="font-semibold">Fast response</div>
-            <div class="text-sm text-gray-600">Updates in days.</div>
-          </div>
-
-          <div class="p-4 rounded-lg bg-green-50">
-            <div class="font-semibold">Transparent tracking</div>
-            <div class="text-sm text-gray-600">Visible status.</div>
-          </div>
-
-          <div class="p-4 rounded-lg bg-indigo-50">
-            <div class="font-semibold">Community verified</div>
-            <div class="text-sm text-gray-600">Neighbors confirm.</div>
+  <!-- Recent Reports -->
+  <section id="reports" class="py-24 bg-base-100">
+    <div class="max-w-7xl mx-auto px-6">
+      <h2 class="text-4xl md:text-5xl font-bold text-center mb-16" data-aos="fade-up">Recent Reports</h2>
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <!-- Report Card 1 -->
+        <div class="report-card card bg-base-200 shadow-xl" data-aos="fade-up" data-aos-delay="100">
+          <figure><img src="https://images.unsplash.com/photo-1593113598332-cd5a0f45ec9e?q=80&w=800" alt="Pothole" class="h-48 object-cover rounded-t-2xl"/></figure>
+          <div class="card-body">
+            <h3 class="card-title">Massive Pothole on Main St</h3>
+            <p>Causing accidents daily. Near the school zone!</p>
+            <div class="card-actions justify-between items-center mt-6">
+              <div class="badge badge-warning">In Progress</div>
+              <div class="text-sm opacity-70">2 days ago • 124 upvotes</div>
+            </div>
           </div>
         </div>
 
-        <div class="mt-6 flex items-center gap-4">
-          <div class="inline-block bg-white rounded-xl shadow p-4">
-            <div class="text-xs text-gray-500">Problems solved</div>
-            <div class="text-2xl font-bold text-sky-600">89 issues</div>
+        <!-- Report Card 2 -->
+        <div class="report-card card bg-base-200 shadow-xl" data-aos="fade-up" data-aos-delay="200">
+          <figure><img src="https://images.unsplash.com/photo-1581092580497-e0e2b3b4a76a?q=80&w=800" alt="Trash" class="h-48 object-cover rounded-t-2xl"/></figure>
+          <div class="card-body">
+            <h3 class="card-title">Illegal Dumping Site</h3>
+            <p>Garbage pile growing behind the market.</p>
+            <div class="card-actions justify-between items-center mt-6">
+              <div class="badge badge-error">Urgent</div>
+              <div class="text-sm opacity-70">5 hours ago • 89 upvotes</div>
+            </div>
           </div>
-          <a href="#join" class="px-4 py-2 bg-sky-600 text-white rounded-lg">Join the community</a>
+        </div>
+
+        <!-- Report Card 3 -->
+        <div class="report-card card bg-base-200 shadow-xl" data-aos="fade-up" data-aos-delay="300">
+          <figure><img src="https://images.unsplash.com/photo-1517336714731-489689fd1ca8?q=80&w=800" alt="Light" class="h-48 object-cover rounded-t-2xl"/></figure>
+          <div class="card-body">
+            <h3 class="card-title">Broken Street Lights</h3>
+            <p>Whole block dark at night. Safety risk.</p>
+            <div class="card-actions justify-between items-center mt-6">
+              <div class="badge badge-info">Reported</div>
+              <div class="text-sm opacity-70">1 day ago • 67 upvotes</div>
+            </div>
+          </div>
         </div>
       </div>
 
-      <div class="rounded-2xl overflow-hidden shadow">
-        <img src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=1200&auto=format&fit=crop" class="w-full h-96 object-cover" />
-      </div>
-    </div>
-  </section>
-
- 
-
-  <!-- Reports -->
-  <section id="reports" class="py-20 bg-white">
-    <div class="max-w-6xl mx-auto px-6">
-
-      <h2 class="text-4xl font-bold text-center mb-10">Reports List</h2>
-
-      <div class="grid md:grid-cols-3 gap-6">
-
-        <div class="bg-white rounded-xl shadow-lg overflow-hidden">
-          <img src="images/annie-spratt-em2zPGMcBnY-unsplash.jpg" class="w-full h-40 object-cover">
-          <div class="p-4">
-            <h3 class="font-bold text-lg">Pothole</h3>
-            <p class="text-gray-600 mb-2">Large pothole causing delays.</p>
-            <span class="text-orange-500 font-medium">In Progress</span>
-          </div>
-        </div>
-
-        <div class="bg-white rounded-xl shadow-lg overflow-hidden">
-          <img src="images/broken.jpg" class="w-full h-40 object-cover">
-          <div class="p-4">
-            <h3 class="font-bold text-lg">Broken Streetlight</h3>
-            <p class="text-gray-600 mb-2">Area is dark at night.</p>
-            <span class="text-green-600 font-medium">Resolved</span>
-          </div>
-        </div>
-
-        <div class="bg-white rounded-xl shadow-lg overflow-hidden">
-          <img src="images/lazarus-okuku-bdlLs-3bl7A-unsplash.jpg" class="w-full h-40 object-cover">
-          <div class="p-4">
-            <h3 class="font-bold text-lg">Drainage Blockage</h3>
-            <p class="text-gray-600 mb-2">Waterlogging during rains.</p>
-            <span class="text-blue-600 font-medium">Pending</span>
-          </div>
-        </div>
-
+      <div class="text-center mt-16">
+        <a href="reports.html" class="btn btn-primary btn-lg">View All Reports →</a>
       </div>
     </div>
   </section>
 
   <!-- Footer -->
-  <footer class="bg-blue-600 border-t border-gray-100">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-12">
-
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-
-        <div>
-          <div class="flex items-center gap-3">
-            <img src="images/logo.png" class="w-10 h-10 rounded">
-            <div>
-              <div class="font-semibold text-white text-sky-700">MyCommunity</div>
-              <div class="text-xs text-gray-500">Making local change visible.</div>
-            </div>
-          </div>
-          <p class="mt-4 text-sm text-white">Contact: hello@mycommunity.org • +233 24 000 0000</p>
-        </div>
-
-        <div>
-          <h4 class="font-semibold mb-3 text-white">Explore</h4>
-          <ul class="space-y-2 text-sm text-gray-600">
-            <li><a href="#how" class="hover:text-sky-600 text-white">How it works</a></li>
-            <li><a href="#reports" class="hover:text-sky-600 text-white">Recent reports</a></li>
-            <li><a href="#dashboard" class="hover:text-sky-600 text-white">Dashboard</a></li>
-            <li><a href="#submit" class="hover:text-sky-600 text-white">Submit a report</a></li>
-          </ul>
-        </div>
-
-        <div>
-          <h4 class="font-semibold mb-3 text-white">Support</h4>
-          <ul class="space-y-2 text-sm text-gray-600 text-white">
-            <li><a href="#faq" class="hover:text-sky-600 text-white">FAQ</a></li>
-            <li><a href="#terms" class="hover:text-sky-600 text-white">Terms of Service</a></li>
-            <li><a href="#privacy" class="hover:text-sky-600 text-white">Privacy Policy</a></li>
-          </ul>
-        </div>
-
-        <div>
-          <h4 class="font-semibold mb-3 text-white">Follow us</h4>
-          <div class="mt-4 flex gap-3 text-white">
-            <a class="p-2 rounded-md hover:bg-gray-100"><svg class="h-5 w-5" fill="currentColor"><path d="M22 12a10 10 0..." /></svg></a>
-            <a class="p-2 rounded-md hover:bg-gray-100"><svg class="h-5 w-5" fill="currentColor"><path d="M22 5.9..." /></svg></a>
-            <a class="p-2 rounded-md hover:bg-gray-100"><svg class="h-5 w-5" fill="currentColor"><path d="M7 2h10..." /></svg></a>
-          </div>
-        </div>
-
+  <footer class="footer p-12 bg-neutral text-neutral-content">
+    <div class="max-w-7xl mx-auto w-full grid grid-cols-2 md:grid-cols-4 gap-8">
+      <div>
+        <h4 class="font-bold text-lg text-white">MyCommunity</h4>
+        <p class="mt-2">Making local government accountable,<br>one report at a time.</p>
       </div>
-
-      <div class="mt-8 text-sm text-white text-center border-t border-gray-100 pt-6">
-        © <span id="year"></span> MyCommunity — All rights reserved.
+      <div>
+        <h6 class="font-bold mb-3">Links</h6>
+        <a class="link link-hover">About Us</a>
+        <a class="link link-hover">How It Works</a>
+        <a class="link link-hover">Success Stories</a>
+      </div>
+      <div>
+        <h6 class="font-bold mb-3">Legal</h6>
+        <a class="link link-hover">Terms of Service</a>
+        <a class="link link-hover">Privacy Policy</a>
+      </div>
+      <div>
+        <h6 class="font-bold mb-3">Contact</h6>
+        <p>hello@mycommunity.org</p>
+        <p>+233 24 000 0000</p>
       </div>
     </div>
   </footer>
 
-  <!-- JS -->
-  <script>
-    const mobileBtn = document.getElementById('mobileMenuBtn');
-    const mobileMenu = document.getElementById('mobileMenu');
+  <!-- Report Modal -->
+  <dialog id="report_modal" class="modal">
+    <div class="modal-box">
+      <h3 class="font-bold text-2xl mb-6">Report an Issue</h3>
+      <form class="space-y-5">
+        <input type="text" placeholder="Issue Title (e.g. Pothole on 5th Ave)" class="input input-bordered w-full" required />
+        <textarea class="textarea textarea-bordered w-full h-32" placeholder="Describe the problem in detail..." required></textarea>
+        <div class="flex gap-3">
+          <button type="submit" class="btn btn-primary flex-1">Submit Report</button>
+          <button type="button" onclick="document.getElementById('report_modal').close()" class="btn btn-ghost">Cancel</button>
+        </div>
+      </form>
+      <form method="dialog">
+        <button class="btn btn-ghost btn-circle absolute top-4 right-4">X</button>
+      </form>
+    </div>
+  </dialog>
 
-    mobileBtn.addEventListener('click', () => {
-      mobileMenu.classList.toggle('hidden');
-    });
-
-    document.getElementById('year').textContent = new Date().getFullYear();
-  </script>
+  <!-- Scripts -->
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="js/script.js"></script>
 </body>
 </html>
