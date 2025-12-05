@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Report Community Issues & See Real Progress</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+        
+        .animate-fade-in-up {
+            animation: fadeInUp 0.6s ease-out forwards;
+        }
+        
+        .animate-float {
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        .hover-lift {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .hover-lift:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+        
+        .gradient-text {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .hero-bg {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.9) 0%, rgba(118, 75, 162, 0.9) 100%),
+                        url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800"><rect fill="%23667eea" width="1200" height="800"/><g fill-opacity="0.1"><circle fill="%23fff" cx="200" cy="150" r="100"/><circle fill="%23fff" cx="800" cy="400" r="150"/><circle fill="%23fff" cx="400" cy="600" r="80"/></g></svg>');
+            background-size: cover;
+            background-position: center;
+        }
+        
+        .status-pending {
+            background: #FEF3C7;
+            color: #92400E;
+        }
+        
+        .status-in-progress {
+            background: #DBEAFE;
+            color: #1E40AF;
+        }
+        
+        .status-resolved {
+            background: #D1FAE5;
+            color: #065F46;
+        }
+    </style>
+</head>
+<body class="font-sans bg-gray-50">
+    <!-- Sticky Header -->
+    <header class="sticky top-0 z-50 bg-white shadow-md">
+        <nav class="container mx-auto px-6 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-2">
+                    <i class="fas fa-flag text-3xl text-blue-600"></i>
+                    <span class="text-2xl font-bold text-gray-800">CommunityReport</span>
+                </div>
+                
+                <!-- Desktop Navigation -->
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="#how-it-works" class="text-gray-700 hover:text-blue-600 transition">How It Works</a>
+                    <a href="#features" class="text-gray-700 hover:text-blue-600 transition">Features</a>
+                    <a href="#reports" class="text-gray-700 hover:text-blue-600 transition">Recent Reports</a>
+                    <a href="#dashboard" class="text-gray-700 hover:text-blue-600 transition">Dashboard</a>
+                    <button onclick="scrollToSection('cta')" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition transform hover:scale-105">
+                        Submit a Report
+                    </button>
+                </div>
+                
+                <!-- Mobile Menu Button -->
+                <button id="mobile-menu-btn" class="md:hidden text-gray-700">
+                    <i class="fas fa-bars text-2xl"></i>
+                </button>
+            </div>
+            
+            <!-- Mobile Menu -->
+            <div id="mobile-menu" class="hidden md:hidden mt-4 pb-4">
+                <a href="#how-it-works" class="block py-2 text-gray-700 hover:text-blue-600">How It Works</a>
+                <a href="#features" class="block py-2 text-gray-700 hover:text-blue-600">Features</a>
+                <a href="#reports" class="block py-2 text-gray-700 hover:text-blue-600">Recent Reports</a>
+                <a href="#dashboard" class="block py-2 text-gray-700 hover:text-blue-600">Dashboard</a>
+                <button onclick="scrollToSection('cta')" class="w-full mt-4 bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition">
+                    Submit a Report
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero-bg text-white py-24 md:py-32">
+        <div class="container mx-auto px-6">
+            <div class="max-w-4xl mx-auto text-center">
+                <h1 class="text-4xl md:text-6xl font-bold mb-6 animate-fade-in-up">
+                    Report Community Issues & See Real Progress in Days, Not Months
+                </h1>
+                <p class="text-xl md:text-2xl mb-8 text-blue-100 animate-fade-in-up" style="animation-delay: 0.2s;">
+                    Empower your voice. Track real-time progress. Build a better community together.
+                </p>
+                
+                <div class="flex flex-col sm:flex-row gap-4 justify-center mb-12 animate-fade-in-up" style="animation-delay: 0.4s;">
+                    <button onclick="scrollToSection('cta')" class="bg-white text-blue-600 px-8 py-4 rounded-lg font-bold text-lg hover:bg-gray-100 transition transform hover:scale-105">
+                        Submit Your First Report
+                    </button>
+                    <button onclick="scrollToSection('dashboard')" class="bg-transparent border-2 border-white text-white px-8 py-4 rounded-lg font-bold text-lg hover:bg-white hover:text-blue-600 transition transform hover:scale-105">
+                        View Dashboard
+                    </button>
+                </div>
+                
+                <!-- Trust Signals -->
+                <div class="flex flex-wrap justify-center gap-8 text-sm animate-fade-in-up" style="animation-delay: 0.6s;">
+                    <div class="flex items-center space-x-2">
+                        <i class="fas fa-check-circle text-green-300"></i>
+                        <span>100% Free</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <i class="fas fa-clock text-green-300"></i>
+                        <span>Real-time Updates</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <i class="fas fa-users text-green-300"></i>
+                        <span>Community-driven</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works Section -->
+    <section id="how-it-works" class="py-20 bg-white">
+        <div class="container mx-auto px-6">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold text-gray-800 mb-4">How It Works</h2>
+                <p class="text-xl text-gray-600">Three simple steps to make a difference</p>
+            </div>
+            
+            <div class="grid md:grid-cols-3 gap-12">
+                <div class="text-center hover-lift bg-gray-50 p-8 rounded-xl">
+                    <div class="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <i class="fas fa-pencil-alt text-3xl text-blue-600"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-800 mb-4">1. Report an Issue</h3>
+                    <p class="text-gray-600">Submit a report about any community issue with photos and location details in under 2 minutes.</p>
+                </div>
+                
+                <div class="text-center hover-lift bg-gray-50 p-8 rounded-xl">
+                    <div class="w-20 h-20 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <i class="fas fa-bell text-3xl text-purple-600"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-800 mb-4">2. Track Progress</h3>
+                    <p class="text-gray-600">Get real-time notifications as your report moves from pending to in-progress to resolved.</p>
+                </div>
+                
+                <div class="text-center hover-lift bg-gray-50 p-8 rounded-xl">
+                    <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <i class="fas fa-check-double text-3xl text-green-600"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-800 mb-4">3. See Results</h3>
+                    <p class="text-gray-600">Watch as your community improves. Most issues are resolved within 7-14 days.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Benefits Section -->
+    <section id="features" class="py-20 bg-gradient-to-br from-blue-50 to-purple-50">
+        <div class="container mx-auto px-6">
+            <div class="grid md:grid-cols-2 gap-12 items-center">
+                <div>
+                    <h2 class="text-4xl font-bold text-gray-800 mb-6">Your Voice Matters</h2>
+                    <p class="text-xl text-gray-600 mb-8">Join hundreds of community members making real change happen.</p>
+                    
+                    <div class="space-y-6">
+                        <div class="flex items-start space-x-4">
+                            <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                                <i class="fas fa-bolt text-blue-600 text-xl"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-xl font-bold text-gray-800 mb-2">Fast Response Times</h3>
+                                <p class="text-gray-600">Average response time of 3 days. Most issues resolved in under 2 weeks.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start space-x-4">
+                            <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                                <i class="fas fa-chart-line text-purple-600 text-xl"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-xl font-bold text-gray-800 mb-2">Complete Transparency</h3>
+                                <p class="text-gray-600">Track every step of the process from submission to resolution.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start space-x-4">
+                            <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                                <i class="fas fa-handshake text-green-600 text-xl"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-xl font-bold text-gray-800 mb-2">Community Collaboration</h3>
+                                <p class="text-gray-600">See what others are reporting and support issues that matter to you.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="relative">
+                    <div class="bg-white rounded-2xl shadow-2xl p-8 relative z-10">
+                        <img src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 300'><rect fill='%234F46E5' width='400' height='300'/><g fill='%23fff' opacity='0.1'><circle cx='100' cy='100' r='60'/><circle cx='300' cy='200' r='80'/><circle cx='200' cy='150' r='50'/></g><text x='200' y='150' font-size='24' fill='%23fff' text-anchor='middle' font-family='Arial'>Community</text></svg>" alt="Community" class="w-full rounded-lg mb-6">
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-500">Total Impact</span>
+                            <span class="text-2xl font-bold gradient-text">89 Issues Resolved</span>
+                        </div>
+                    </div>
+                    
+                    <div class="absolute top-8 -right-4 bg-yellow-400 text-gray-800 px-6 py-3 rounded-lg shadow-lg animate-float z-20">
+                        <div class="font-bold text-2xl">70%</div>
+                        <div class="text-sm">Resolution Rate</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Dashboard Stats Section -->
+    <section id="dashboard" class="py-20 bg-white">
+        <div class="container mx-auto px-6">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold text-gray-800 mb-4">Community Dashboard</h2>
+                <p class="text-xl text-gray-600">Real-time statistics from our community</p>
+            </div>
+            
+            <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
+                <div class="bg-gradient-to-br from-blue-500 to-blue-600 text-white p-8 rounded-xl hover-lift">
+                    <i class="fas fa-clipboard-list text-4xl mb-4 opacity-80"></i>
+                    <div class="text-5xl font-bold mb-2">127</div>
+                    <div class="text-blue-100">Total Reports</div>
+                </div>
+                
+                <div class="bg-gradient-to-br from-yellow-500 to-orange-500 text-white p-8 rounded-xl hover-lift">
+                    <i class="fas fa-spinner text-4xl mb-4 opacity-80"></i>
+                    <div class="text-5xl font-bold mb-2">34</div>
+                    <div class="text-yellow-100">In Progress</div>
+                </div>
+                
+                <div class="bg-gradient-to-br from-green-500 to-green-600 text-white p-8 rounded-xl hover-lift">
+                    <i class="fas fa-check-circle text-4xl mb-4 opacity-80"></i>
+                    <div class="text-5xl font-bold mb-2">89</div>
+                    <div class="text-green-100">Resolved</div>
+                </div>
+                
+                <div class="bg-gradient-to-br from-purple-500 to-purple-600 text-white p-8 rounded-xl hover-lift">
+                    <i class="fas fa-user text-4xl mb-4 opacity-80"></i>
+                    <div class="text-5xl font-bold mb-2">8</div>
+                    <div class="text-purple-100">Your Reports</div>
+                </div>
+            </div>
+            
+            <div class="text-center">
+                <button onclick="alert('Dashboard feature coming soon!')" class="bg-blue-600 text-white px-8 py-4 rounded-lg font-bold text-lg hover:bg-blue-700 transition transform hover:scale-105">
+                    View Full Dashboard
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Recent Reports Section -->
+    <section id="reports" class="py-20 bg-gray-50">
+        <div class="container mx-auto px-6">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold text-gray-800 mb-4">Recent Reports</h2>
+                <p class="text-xl text-gray-600">See what's happening in your community</p>
+            </div>
+            
+            <div class="grid md:grid-cols-3 gap-8 mb-12">
+                <div class="bg-white rounded-xl shadow-lg overflow-hidden hover-lift">
+                    <img src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 250'><rect fill='%236B7280' width='400' height='250'/><path fill='%239CA3AF' d='M0 200 L100 180 L200 190 L300 170 L400 185 L400 250 L0 250 Z'/><circle fill='%23FCD34D' cx='320' cy='60' r='30'/></svg>" alt="Pothole" class="w-full h-48 object-cover">
+                    <div class="p-6">
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="status-in-progress px-3 py-1 rounded-full text-sm font-semibold">In Progress</span>
+                            <span class="text-gray-500 text-sm">2 days ago</span>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">Pothole on Main Street</h3>
+                        <p class="text-gray-600 mb-4">Large pothole causing traffic issues near the intersection.</p>
+                        <div class="flex items-center text-gray-500 text-sm">
+                            <i class="fas fa-map-marker-alt mr-2"></i>
+                            <span>Main Street & 5th Ave</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-xl shadow-lg overflow-hidden hover-lift">
+                    <img src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 250'><rect fill='%234B5563' width='400' height='250'/><rect fill='%236B7280' x='50' y='100' width='100' height='120'/><rect fill='%236B7280' x='250' y='80' width='100' height='140'/><rect fill='%23FCD34D' x='60' y='110' width='30' height='40'/><rect fill='%23FCD34D' x='100' y='110' width='30' height='40'/></svg>" alt="Street Light" class="w-full h-48 object-cover">
+                    <div class="p-6">
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="status-resolved px-3 py-1 rounded-full text-sm font-semibold">Resolved</span>
+                            <span class="text-gray-500 text-sm">5 days ago</span>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">Broken Street Light</h3>
+                        <p class="text-gray-600 mb-4">Street light out for over a week, creating safety concerns.</p>
+                        <div class="flex items-center text-gray-500 text-sm">
+                            <i class="fas fa-map-marker-alt mr-2"></i>
+                            <span>Oak Park Entrance</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-xl shadow-lg overflow-hidden hover-lift">
+                    <img src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 250'><rect fill='%2322C55E' width='400' height='250'/><circle fill='%2316A34A' cx='100' cy='180' r='40'/><circle fill='%2316A34A' cx='200' cy='160' r='50'/><circle fill='%2316A34A' cx='320' cy='170' r='45'/><rect fill='%238B5CF6' x='150' y='100' width='60' height='20' rx='10'/><rect fill='%238B5CF6' x='240' y='80' width='60' height='20' rx='10'/></svg>" alt="Graffiti" class="w-full h-48 object-cover">
+                    <div class="p-6">
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="status-pending px-3 py-1 rounded-full text-sm font-semibold">Pending</span>
+                            <span class="text-gray-500 text-sm">1 day ago</span>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">Graffiti in Park</h3>
+                        <p class="text-gray-600 mb-4">Vandalism on playground equipment needs removal.</p>
+                        <div class="flex items-center text-gray-500 text-sm">
+                            <i class="fas fa-map-marker-alt mr-2"></i>
+                            <span>Central Park Playground</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="text-center">
+                <button onclick="alert('View all reports feature coming soon!')" class="bg-gray-800 text-white px-8 py-4 rounded-lg font-bold text-lg hover:bg-gray-900 transition transform hover:scale-105">
+                    View All Reports
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section id="cta" class="py-24 bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+        <div class="container mx-auto px-6 text-center">
+            <h2 class="text-4xl md:text-5xl font-bold mb-6">Ready to Make a Difference?</h2>
+            <p class="text-xl mb-8 text-blue-100">Join your community in creating positive change today.</p>
+            
+            <div class="flex flex-col sm:flex-row gap-4 justify-center mb-8">
+                <button onclick="alert('Submit report feature coming soon!')" class="bg-white text-blue-600 px-10 py-4 rounded-lg font-bold text-lg hover:bg-gray-100 transition transform hover:scale-105">
+                    Submit a Report Now
+                </button>
+                <button onclick="scrollToSection('how-it-works')" class="bg-transparent border-2 border-white text-white px-10 py-4 rounded-lg font-bold text-lg hover:bg-white hover:text-blue-600 transition transform hover:scale-105">
+                    Learn More
+                </button>
+            </div>
+            
+            <p class="text-blue-100 flex items-center justify-center">
+                <i class="fas fa-check-circle mr-2"></i>
+                100% free to use • No credit card required
+            </p>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-gray-300 py-12">
+        <div class="container mx-auto px-6">
+            <div class="grid md:grid-cols-4 gap-8 mb-8">
+                <div>
+                    <div class="flex items-center space-x-2 mb-4">
+                        <i class="fas fa-flag text-2xl text-blue-500"></i>
+                        <span class="text-xl font-bold text-white">CommunityReport</span>
+                    </div>
+                    <p class="text-gray-400 mb-4">Empowering communities to create positive change through transparent issue reporting and tracking.</p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-blue-500 transition"><i class="fab fa-facebook text-xl"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-blue-500 transition"><i class="fab fa-twitter text-xl"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-blue-500 transition"><i class="fab fa-instagram text-xl"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-blue-500 transition"><i class="fab fa-linkedin text-xl"></i></a>
+                    </div>
+                </div>
+                
+                <div>
+                    <h3 class="text-white font-bold mb-4">Platform</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#how-it-works" class="hover:text-blue-500 transition">How It Works</a></li>
+                        <li><a href="#features" class="hover:text-blue-500 transition">Features</a></li>
+                        <li><a href="#dashboard" class="hover:text-blue-500 transition">Dashboard</a></li>
+                        <li><a href="#reports" class="hover:text-blue-500 transition">Recent Reports</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3 class="text-white font-bold mb-4">Resources</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="hover:text-blue-500 transition">Help Center</a></li>
+                        <li><a href="#" class="hover:text-blue-500 transition">Community Guidelines</a></li>
+                        <li><a href="#" class="hover:text-blue-500 transition">Blog</a></li>
+                        <li><a href="#" class="hover:text-blue-500 transition">Success Stories</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3 class="text-white font-bold mb-4">Contact</h3>
+                    <ul class="space-y-2">
+                        <li class="flex items-center"><i class="fas fa-envelope mr-2"></i> support@communityreport.com</li>
+                        <li class="flex items-center"><i class="fas fa-phone mr-2"></i> (555) 123-4567</li>
+                        <li class="flex items-center"><i class="fas fa-map-marker-alt mr-2"></i> 123 Main St, City, State</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center">
+                <p class="text-gray-400 text-sm mb-4 md:mb-0">&copy; 2024 CommunityReport. All rights reserved.</p>
+                <div class="flex space-x-6 text-sm">
+                    <a href="#" class="hover:text-blue-500 transition">Privacy Policy</a>
+                    <a href="#" class="hover:text-blue-500 transition">Terms of Service</a>
+                    <a href="#" class="hover:text-blue-500 transition">Cookie Policy</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Mobile menu toggle
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        
+        mobileMenuBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+        
+        // Smooth scroll function
+        function scrollToSection(id) {
+            const element = document.getElementById(id);
+            if (element) {
+                element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                mobileMenu.classList.add('hidden');
+            }
+        }
+        
+        // Intersection Observer for fade-in animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -100px 0px'
+        };
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+        
+        // Observe all sections
+        document.querySelectorAll('section').forEach(section => {
+            section.style.opacity = '0';
+            section.style.transform = 'translateY(30px)';
+            section.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+            observer.observe(section);
+        });
+        
+        // Add scroll effect to header
+        let lastScroll = 0;
+        window.addEventListener('scroll', () => {
+            const header = document.querySelector('header');
+            const currentScroll = window.pageYOffset;
+            
+            if (currentScroll > lastScroll && currentScroll > 100) {
+                header.style.transform = 'translateY(-100%)';
+            } else {
+                header.style.transform = 'translateY(0)';
+            }
+            
+            lastScroll = currentScroll;
+        });
+        
+    </script>
+</body>
+</html>

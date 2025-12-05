@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Community</title>
+<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+  html { scroll-behavior: smooth; }
+  .fade-in { animation: fadeIn 0.5s ease forwards; }
+  .fade-out { animation: fadeOut 0.5s ease forwards; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes fadeOut { from { opacity: 1; transform: translateY(0); } to { opacity: 0; transform: translateY(20px); } }
+  .slide-left { animation: slideLeft 0.5s forwards; }
+  .slide-right { animation: slideRight 0.5s forwards; }
+  @keyframes slideLeft { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity:1; } }
+  @keyframes slideRight { from { transform: translateX(-100%); opacity:0; } to { transform: translateX(0); opacity:1; } }
+</style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+<!-- NAVBAR -->
+<nav class="bg-white shadow-sm sticky top-0 z-50">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex justify-between items-center h-20">
+      <div class="flex items-center space-x-2 cursor-pointer">
+        <img src="images/logo.png" alt="Logo" class="w-14 h-14 rounded-lg object-cover">
+        <span class="text-2xl font-bold text-gray-800">My<br><span class="text-blue-600">Community</span></span>
+      </div>
+      <div class="hidden md:flex space-x-8">
+        <a href="#home" class="nav-link hover:text-blue-600">Home</a>
+        <a href="#dashboard" class="nav-link hover:text-blue-600">Dashboard</a>
+        <a href="#reports" class="nav-link hover:text-blue-600">Reports</a>
+        <a href="#about" class="nav-link hover:text-blue-600">About Us</a>
+        <a href="#account" class="nav-link hover:text-blue-600">Account</a>
+        <a href="#account" id="joinNowNav" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">Join Now</a>
+      </div>
+      <button id="menuBtn" class="md:hidden p-2 focus:outline-none">
+        <svg class="w-7 h-7 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <div id="mobileMenu" class="hidden md:hidden bg-white border-t">
+    <div class="flex flex-col px-4 py-4 space-y-4">
+      <a href="#home" class="mobile-link">Home</a>
+      <a href="#dashboard" class="mobile-link">Dashboard</a>
+      <a href="#reports" class="mobile-link">Reports</a>
+      <a href="#about" class="mobile-link">About Us</a>
+      <a href="#account" class="mobile-link">Account</a>
+      <a href="#account" class="mobile-link" id="joinNowMobile">Join Now</a>
+    </div>
+  </div>
+</nav>
+
+<script>
+  const menuBtn = document.getElementById("menuBtn");
+  const mobileMenu = document.getElementById("mobileMenu");
+  menuBtn.addEventListener("click", () => mobileMenu.classList.toggle("hidden"));
+</script>
+
+<!-- HOME -->
+<section id="home" class="relative h-screen flex items-center justify-center bg-cover bg-center" style="background-image:url('images/8065b825efa672a96833fd13ded88df2.jpg');">
+  <div class="bg-white/70 backdrop-blur-md rounded-xl p-12 text-center max-w-2xl">
+    <h1 class="text-5xl font-bold text-gray-900 mb-4">Welcome to My Community</h1>
+    <p class="text-gray-700 text-lg mb-8">
+      Report issues, track progress, and collaborate with your community — all in one simple platform.
+    </p>
+    <a href="#account" class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-xl font-medium">Get Started</a>
+  </div>
+</section>
+
+<!-- DASHBOARD -->
+<section id="dashboard" class="py-20 bg-gradient-to-b from-blue-50 to-white">
+  <div class="max-w-7xl mx-auto px-6">
+    <h2 class="text-4xl font-bold mb-12 text-gray-900 text-center">Dashboard Overview</h2>
+    <div class="grid md:grid-cols-4 gap-6">
+      <div class="bg-white rounded-xl shadow-lg p-6 flex flex-col items-center">
+        <i class="fa-solid fa-clipboard-list text-4xl text-blue-600 mb-2"></i>
+        <div class="text-sm text-gray-600 mb-2">Total Reports</div>
+        <div class="text-3xl font-bold text-gray-900">127</div>
+        <div class="text-sm text-green-600 mt-2">↑ 12% this month</div>
+      </div>
+      <div class="bg-white rounded-xl shadow-lg p-6 flex flex-col items-center">
+        <i class="fa-solid fa-spinner text-4xl text-orange-500 mb-2"></i>
+        <div class="text-sm text-gray-600 mb-2">In Progress</div>
+        <div class="text-3xl font-bold text-orange-500">34</div>
+        <div class="text-sm text-gray-600 mt-2">Being addressed</div>
+      </div>
+      <div class="bg-white rounded-xl shadow-lg p-6 flex flex-col items-center">
+        <i class="fa-solid fa-check-circle text-4xl text-green-600 mb-2"></i>
+        <div class="text-sm text-gray-600 mb-2">Resolved</div>
+        <div class="text-3xl font-bold text-green-600">89</div>
+        <div class="text-sm text-green-600 mt-2">70% success rate</div>
+      </div>
+      <div class="bg-white rounded-xl shadow-lg p-6 flex flex-col items-center">
+        <i class="fa-solid fa-user text-4xl text-blue-600 mb-2"></i>
+        <div class="text-sm text-gray-600 mb-2">Your Reports</div>
+        <div class="text-3xl font-bold text-blue-600">8</div>
+        <div class="text-sm text-gray-600 mt-2">5 resolved</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- REPORTS -->
+<section id="reports" class="py-20 bg-white">
+  <div class="max-w-6xl mx-auto px-6">
+    <h2 class="text-4xl font-bold text-gray-900 mb-10 text-center">Reports List</h2>
+    <div class="grid md:grid-cols-3 gap-6">
+      <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+        <img src="images/annie-spratt-em2zPGMcBnY-unsplash.jpg" alt="Pothole" class="w-full h-40 object-cover">
+        <div class="p-4">
+          <h3 class="font-bold text-lg mb-2">Pothole</h3>
+          <p class="text-gray-600 mb-2">A large pothole is causing traffic delays and potential accidents.</p>
+          <span class="text-orange-500 font-medium">In Progress</span>
+        </div>
+      </div>
+      <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+        <img src="images/broken.jpg" alt="Streetlight" class="w-full h-40 object-cover">
+        <div class="p-4">
+          <h3 class="font-bold text-lg mb-2">Broken Streetlight</h3>
+          <p class="text-gray-600 mb-2">Streetlight not working, area is dark at night affecting safety.</p>
+          <span class="text-green-600 font-medium">Resolved</span>
+        </div>
+      </div>
+      <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+        <img src="images/lazarus-okuku-bdlLs-3bl7A-unsplash.jpg" alt="Drainage" class="w-full h-40 object-cover">
+        <div class="p-4">
+          <h3 class="font-bold text-lg mb-2">Drainage Blockage</h3>
+          <p class="text-gray-600 mb-2">Drainage system clogged causing waterlogging during rains.</p>
+          <span class="text-blue-600 font-medium">Pending</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about" class="py-20 bg-gradient-to-b from-blue-50 to-white">
+  <div class="max-w-6xl mx-auto px-6 flex flex-col md:flex-row items-center gap-8">
+    <div class="md:w-1/2">
+      <img src="images/community-team.jpg" alt="Community Team" class="rounded-xl shadow-lg w-full">
+    </div>
+    <div class="md:w-1/2">
+      <h2 class="text-4xl font-bold mb-6 text-gray-900">About Us</h2>
+      <p class="text-gray-700 mb-4">
+        My Community makes neighborhoods safer and more responsive. Residents can report issues in real-time and authorities track progress efficiently.
+      </p>
+      <p class="text-gray-700 mb-4">
+        Join us to make your community better. Together, we ensure faster resolutions and a safer environment for all.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ACCOUNT -->
+<section id="account" class="py-20 bg-gradient-to-r from-blue-100 via-white to-blue-100">
+  <div class="max-w-3xl mx-auto bg-white p-10 rounded-2xl shadow-lg relative overflow-hidden">
+    <!-- Container: both forms occupy same area and animate -->
+    <div id="signUpForm" class="relative z-10">
+      <h2 class="text-3xl font-bold mb-6 text-gray-900 text-center flex items-center justify-center gap-2">
+        <img src="images/logo.png" class="w-10 h-10 rounded" alt="Logo"> Sign Up
+      </h2>
+      <form class="space-y-4">
+        <input type="text" placeholder="Full Name" class="w-full border p-3 rounded-lg">
+        <input type="email" placeholder="Email Address" class="w-full border p-3 rounded-lg">
+        <input type="password" placeholder="Password" class="w-full border p-3 rounded-lg">
+        <button class="bg-green-600 hover:bg-green-700 text-white w-full py-3 rounded-lg">Sign Up</button>
+      </form>
+      <p class="mt-4 text-gray-600 text-center">
+        Already have an account? 
+        <span id="toSignIn" class="text-blue-600 cursor-pointer font-semibold">Sign In</span>
+      </p>
+    </div>
+
+    <!-- Sign In (initially off-canvas to the right) -->
+    <div id="signInForm" class="absolute inset-0 transform translate-x-full">
+      <h2 class="text-3xl font-bold mb-6 text-gray-900 text-center flex items-center justify-center gap-2">
+        <img src="images/logo.png" class="w-10 h-10 rounded" alt="Logo"> Sign In
+      </h2>
+      <form class="space-y-4">
+        <input type="email" placeholder="Email Address" class="w-full border p-3 rounded-lg">
+        <input type="password" placeholder="Password" class="w-full border p-3 rounded-lg">
+        <button class="bg-blue-600 hover:bg-blue-700 text-white w-full py-3 rounded-lg">Sign In</button>
+      </form>
+      <p class="mt-4 text-gray-600 text-center">
+        Don’t have an account? 
+        <span id="toSignUp" class="text-blue-600 cursor-pointer font-semibold">Sign Up</span>
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="bg-blue-800 text-white mt-12">
+  <div class="max-w-7xl mx-auto px-6 py-6 flex flex-col md:flex-row justify-between items-center">
+    <p class="text-sm">&copy; 2025 My Community. All rights reserved.</p>
+    <div class="flex space-x-4 mt-2 md:mt-0">
+      <a href="#" class="hover:text-gray-300 text-xl"><i class="fab fa-facebook"></i></a>
+      <a href="#" class="hover:text-gray-300 text-xl"><i class="fab fa-twitter"></i></a>
+      <a href="#" class="hover:text-gray-300 text-xl"><i class="fab fa-github"></i></a>
+    </div>
+  </div>
+</footer>
+ 
+</body>
+<!-- Smooth scrolling offset + sign toggle animations -->
+<script>
+  // mobile menu toggle (exists) + smooth scroll with header offset
+  const menuBtn = document.getElementById("menuBtn");
+  const mobileMenu = document.getElementById("mobileMenu");
+  menuBtn.addEventListener("click", () => mobileMenu.classList.toggle("hidden"));
+
+  const header = document.querySelector('nav') || document.querySelector('header');
+  const OFFSET = header ? header.getBoundingClientRect().height + 8 : 80;
+
+  function smoothTo(hash) {
+    const el = document.querySelector(hash);
+    if (!el) return;
+    const y = el.getBoundingClientRect().top + window.scrollY - OFFSET;
+    window.scrollTo({ top: y, behavior: 'smooth' });
+  }
+
+  document.querySelectorAll('.nav-link, .mobile-link').forEach(a => {
+    a.addEventListener('click', (e) => {
+      const href = a.getAttribute('href');
+      if (href && href.startsWith('#')) {
+        e.preventDefault();
+        smoothTo(href);
+        // close mobile menu if open
+        if (!mobileMenu.classList.contains('hidden')) mobileMenu.classList.add('hidden');
+      }
+    });
+  });
+
+  // Join Now nav shortcuts: open account and show sign up
+  document.getElementById('joinNowNav')?.addEventListener('click', (e)=>{
+    // default behavior handled by nav listener -> ensure sign up visible
+    showSignUp();
+  });
+  document.getElementById('joinNowMobile')?.addEventListener('click', (e)=>{
+    mobileMenu.classList.add('hidden');
+    smoothTo('#account');
+    showSignUp();
+  });
+
+  // animated sign form switching
+  const signUp = document.getElementById('signUpForm');
+  const signIn = document.getElementById('signInForm');
+  const toSignIn = document.getElementById('toSignIn');
+  const toSignUp = document.getElementById('toSignUp');
+
+  function showSignIn() {
+    if (!signUp || !signIn) return;
+    // slide signUp left and bring signIn from right
+    signUp.style.transition = 'transform 360ms ease, opacity 360ms ease';
+    signIn.style.transition = 'transform 360ms ease, opacity 360ms ease';
+    signUp.style.transform = 'translateX(-100%)';
+    signUp.style.opacity = '0';
+    signIn.style.transform = 'translateX(0)';
+    signIn.style.opacity = '1';
+    // ensure signIn is on top
+    signIn.style.zIndex = 20;
+    signUp.style.zIndex = 10;
+  }
+
+  function showSignUp() {
+    if (!signUp || !signIn) return;
+    signUp.style.transition = 'transform 360ms ease, opacity 360ms ease';
+    signIn.style.transition = 'transform 360ms ease, opacity 360ms ease';
+    signUp.style.transform = 'translateX(0)';
+    signUp.style.opacity = '1';
+    signIn.style.transform = 'translateX(100%)';
+    signIn.style.opacity = '0';
+    signUp.style.zIndex = 20;
+    signIn.style.zIndex = 10;
+  }
+
+  toSignIn?.addEventListener('click', (e)=> {
+    e.preventDefault();
+    showSignIn();
+  });
+  toSignUp?.addEventListener('click', (e)=> {
+    e.preventDefault();
+    showSignUp();
+  });
+
+  // initialize forms state (ensure signUp visible, signIn off-screen)
+  showSignUp();
+</script>
+</html>
