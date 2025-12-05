@@ -9,9 +9,8 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" type="text/css" />
 
-  <!-- Fonts & Icons -->
+  <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 
   <!-- AOS Animation -->
   <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
@@ -24,15 +23,32 @@
       background: linear-gradient(135deg, #0ea5e9 0%, #1e40af 100%),
                   url('https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?q=80&w=2400') center/cover no-repeat;
     }
-    #homeMap {
-  height: 400px;
-  max-width: 800px; /* constrain width */
-  margin: 0 auto;   /* center it */
-  border-radius: 1.5rem;
-  overflow: hidden;
-}
 
-    .report-card:hover { transform: translateY(-10px); transition: all 0.3s ease; }
+    /* Fixed map container - PROPER SIZING */
+    #homeMap {
+      height: 400px;
+      width: 100%;
+      max-width: 900px;
+      margin: 0 auto;
+      border-radius: 1rem;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .report-card:hover { 
+      transform: translateY(-10px); 
+      transition: all 0.3s ease; 
+    }
+
+    /* Ensure smooth scrolling */
+    html {
+      scroll-behavior: smooth;
+      overflow-x: hidden;
+    }
+
+    body {
+      overflow-x: hidden;
+    }
   </style>
 </head>
 
@@ -70,7 +86,7 @@
     <div class="navbar-center hidden lg:flex">
       <ul class="menu menu-horizontal px-1 font-medium">
         <li><a href="#home">Home</a></li>
-        <li><a href="/map.html">Map</a></li>
+        <li><a href="#map">Map</a></li>
         <li><a href="#reports">Reports</a></li>
         <li><a href="dashboard.html">Dashboard</a></li>
       </ul>
@@ -112,28 +128,23 @@
     </div>
   </section>
 
-<!-- Live Map Section -->
-<section id="map" class="py-20 bg-base-200">
-  <div class="max-w-7xl mx-auto px-6">
-    <h2 class="text-4xl font-bold text-center mb-12" data-aos="fade-up">
-      Live Issues Near You
-    </h2>
+  <!-- Live Map Section -->
+  <section id="map" class="py-20 bg-base-200">
+    <div class="max-w-7xl mx-auto px-6">
+      <h2 class="text-4xl font-bold text-center mb-12" data-aos="fade-up">
+        Live Issues Near You
+      </h2>
 
-    <!-- Map Container -->
-    <div 
-      class="mx-auto max-w-4xl rounded-2xl shadow-2xl overflow-hidden" 
-      data-aos="fade-up" 
-      data-aos-delay="100"
-    >
-      <div id="homeMap" class="w-full h-96 rounded-2xl"></div>
+      <!-- Map Container with proper constraints -->
+      <div class="mx-auto max-w-4xl" data-aos="fade-up" data-aos-delay="100">
+        <div id="homeMap" class="shadow-2xl"></div>
+      </div>
+
+      <div class="text-center mt-10">
+        <a href="map.html" class="btn btn-primary btn-lg">Open Full Map →</a>
+      </div>
     </div>
-
-    <div class="text-center mt-10">
-      <a href="map.html" class="btn btn-primary btn-outline">Open Full Map →</a>
-    </div>
-  </div>
-</section>
-
+  </section>
 
   <!-- Recent Reports -->
   <section id="reports" class="py-24 bg-base-100">
@@ -216,7 +227,7 @@
   <dialog id="report_modal" class="modal">
     <div class="modal-box">
       <h3 class="font-bold text-2xl mb-6">Report an Issue</h3>
-      <form class="space-y-5">
+      <form class="space-y-5" onsubmit="handleReportSubmit(event)">
         <input type="text" placeholder="Issue Title (e.g. Pothole on 5th Ave)" class="input input-bordered w-full" required />
         <textarea class="textarea textarea-bordered w-full h-32" placeholder="Describe the problem in detail..." required></textarea>
         <div class="flex gap-3">
@@ -225,14 +236,203 @@
         </div>
       </form>
       <form method="dialog">
-        <button class="btn btn-ghost btn-circle absolute top-4 right-4">X</button>
+        <button class="btn btn-ghost btn-circle absolute top-4 right-4">✕</button>
       </form>
     </div>
   </dialog>
 
   <!-- Scripts -->
   <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script src="js/script.js"></script>
+  
+  <!-- Google Maps API -->
+  <script async defer src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&callback=initMap"></script>
+  
+  <script>
+    // Initialize AOS
+    AOS.init({
+      duration: 800,
+      once: true,
+      offset: 50,
+    });
+
+    // Dark Mode Toggle
+    const toggle = document.getElementById("theme-toggle");
+    const html = document.documentElement;
+
+    const savedTheme = localStorage.getItem("theme");
+    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+
+    if (savedTheme) {
+      html.setAttribute("data-theme", savedTheme);
+      if (toggle) toggle.checked = savedTheme === "dark";
+    } else if (prefersDark) {
+      html.setAttribute("data-theme", "dark");
+      if (toggle) toggle.checked = true;
+    }
+
+    if (toggle) {
+      toggle.addEventListener("change", () => {
+        const newTheme = toggle.checked ? "dark" : "light";
+        html.setAttribute("data-theme", newTheme);
+        localStorage.setItem("theme", newTheme);
+      });
+    }
+
+    // Google Maps Initialization
+    let map;
+    let markers = [];
+
+    function initMap() {
+      // Center on Accra, Ghana
+      const accra = { lat: 5.6037, lng: -0.1870 };
+      
+      const mapElement = document.getElementById('homeMap');
+      if (!mapElement) return;
+
+      map = new google.maps.Map(mapElement, {
+        zoom: 13,
+        center: accra,
+        styles: [
+          {
+            featureType: "poi",
+            elementType: "labels",
+            stylers: [{ visibility: "off" }]
+          }
+        ]
+      });
+
+      // Sample report locations in Accra
+      const reports = [
+        { 
+          position: { lat: 5.6037, lng: -0.1870 }, 
+          title: "Deep Pothole", 
+          description: "Near Accra Mall",
+          status: "warning"
+        },
+        { 
+          position: { lat: 5.6140, lng: -0.2050 }, 
+          title: "Broken Street Light", 
+          description: "Very dark at night",
+          status: "urgent"
+        },
+        { 
+          position: { lat: 5.5910, lng: -0.1790 }, 
+          title: "Illegal Dumping", 
+          description: "Growing pile of trash",
+          status: "urgent"
+        },
+        { 
+          position: { lat: 5.5700, lng: -0.2100 }, 
+          title: "Flooded Road", 
+          description: "Cars getting stuck",
+          status: "warning"
+        },
+        { 
+          position: { lat: 5.6300, lng: -0.1700 }, 
+          title: "Missing Manhole Cover", 
+          description: "Extremely dangerous!",
+          status: "urgent"
+        }
+      ];
+
+      // Add markers
+      reports.forEach(report => {
+        const marker = new google.maps.Marker({
+          position: report.position,
+          map: map,
+          title: report.title,
+          icon: {
+            path: google.maps.SymbolPath.CIRCLE,
+            scale: 10,
+            fillColor: report.status === 'urgent' ? '#ef4444' : '#f59e0b',
+            fillOpacity: 1,
+            strokeColor: '#ffffff',
+            strokeWeight: 2
+          }
+        });
+
+        const infoWindow = new google.maps.InfoWindow({
+          content: `
+            <div style="padding: 10px; max-width: 250px;">
+              <h3 style="font-weight: bold; margin-bottom: 5px;">${report.title}</h3>
+              <p style="margin-bottom: 10px;">${report.description}</p>
+              <span style="background: ${report.status === 'urgent' ? '#ef4444' : '#f59e0b'}; color: white; padding: 4px 12px; border-radius: 9999px; font-size: 12px;">
+                ${report.status === 'urgent' ? 'Urgent' : 'In Progress'}
+              </span>
+            </div>
+          `
+        });
+
+        marker.addListener('click', () => {
+          infoWindow.open(map, marker);
+        });
+
+        markers.push(marker);
+      });
+
+      // Try to get user's location
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            const userLocation = {
+              lat: position.coords.latitude,
+              lng: position.coords.longitude
+            };
+            
+            // Only recenter if user is in Ghana (rough bounds)
+            if (userLocation.lat > 4.5 && userLocation.lat < 11.5 && 
+                userLocation.lng > -3.5 && userLocation.lng < 1.5) {
+              map.setCenter(userLocation);
+              map.setZoom(15);
+              
+              // Add user location marker
+              new google.maps.Marker({
+                position: userLocation,
+                map: map,
+                title: "Your Location",
+                icon: {
+                  path: google.maps.SymbolPath.CIRCLE,
+                  scale: 8,
+                  fillColor: '#3b82f6',
+                  fillOpacity: 1,
+                  strokeColor: '#ffffff',
+                  strokeWeight: 3
+                }
+              });
+            }
+          },
+          (error) => {
+            console.log('Geolocation error:', error);
+          }
+        );
+      }
+    }
+
+    // Handle report form submission
+    function handleReportSubmit(event) {
+      event.preventDefault();
+      alert('Report submitted successfully! (This is a demo)');
+      document.getElementById('report_modal').close();
+      event.target.reset();
+    }
+
+    // Smooth scrolling for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        const href = this.getAttribute('href');
+        if (href !== '#' && href.startsWith('#')) {
+          e.preventDefault();
+          const target = document.querySelector(href);
+          if (target) {
+            const offsetTop = target.offsetTop - 80;
+            window.scrollTo({
+              top: offsetTop,
+              behavior: 'smooth'
+            });
+          }
+        }
+      });
+    });
+  </script>
 </body>
 </html>

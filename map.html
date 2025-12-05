@@ -12,12 +12,6 @@
   <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
-  <!-- Leaflet CSS -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
-  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.css"/>
-  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css"/>
-  <link rel="stylesheet" href="https://unpkg.com/leaflet.locatecontrol@0.79.0/dist/L.Control.Locate.min.css" />
-
   <style>
     html, body {
       height: 100%;
@@ -26,17 +20,16 @@
       overflow: hidden;
       font-family: 'Inter', sans-serif;
     }
+
     #map {
-  position: absolute;
-  top: 5rem; /* height of your header-bar */
-  left: 0;
-  width: 100%;
-  bottom: 0; /* fill remaining height */
-  z-index: 1;
-}
+      position: absolute;
+      top: 5rem;
+      left: 0;
+      width: 100%;
+      bottom: 0;
+      z-index: 1;
+    }
 
-
-    /* Glass Header - Always on top */
     .header-bar {
       position: fixed;
       top: 0;
@@ -50,7 +43,6 @@
       padding: 1rem 0;
     }
 
-    /* Floating + button - Always on top */
     .fab {
       position: fixed;
       bottom: 24px;
@@ -58,15 +50,26 @@
       z-index: 1000;
     }
 
-    /* Fix dark mode map background */
-    html[data-theme="dark"] .leaflet-container { background: #0f172a !important; }
+    html[data-theme="dark"] #map {
+      background: #0f172a !important;
+    }
+
+    /* Custom info window styling */
+    .gm-style .gm-style-iw-c {
+      border-radius: 12px !important;
+      padding: 0 !important;
+    }
+
+    .gm-style .gm-style-iw-d {
+      overflow: auto !important;
+    }
   </style>
 </head>
 
 <body>
 
-  <!-- GLASS HEADER – ALWAYS VISIBLE -->
-  <div class="header-bar text-white ">
+  <!-- GLASS HEADER -->
+  <div class="header-bar text-white">
     <div class="flex justify-between items-center px-4 max-w-7xl mx-auto">
       <a href="/" class="btn btn-circle btn-ghost hover:bg-white/20 transition">
         <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -92,119 +95,418 @@
   </div>
 
   <!-- Floating Report Button -->
-  <button onclick="document.getElementById('report_modal').showModal()" class="fab btn btn-circle btn-lg shadow-2xl btn-primary text-white text-3xl hover:scale-110 transition">
+  <button onclick="document.getElementById('report_modal').showModal()" 
+    class="fab btn btn-circle btn-lg shadow-2xl btn-primary text-white text-3xl hover:scale-110 transition">
     +
   </button>
 
-  <!-- Map -->
+  <!-- Map Container -->
   <div id="map"></div>
 
   <!-- Report Modal -->
   <dialog id="report_modal" class="modal modal-bottom sm:modal-middle">
     <div class="modal-box">
       <h3 class="font-bold text-2xl mb-6">Report New Issue</h3>
-      <form class="space-y-5">
-        <input type="text" placeholder="Title..." class="input input-bordered w-full" required />
-        <textarea class="textarea textarea-bordered w-full h-32" placeholder="Describe the issue..." required></textarea>
-        <div class="alert alert-info text-sm">Location will be auto-detected</div>
+      <form class="space-y-5" onsubmit="handleReportSubmit(event)">
+        <input type="text" id="reportTitle" placeholder="Title..." class="input input-bordered w-full" required />
+        <textarea id="reportDescription" class="textarea textarea-bordered w-full h-32" placeholder="Describe the issue..." required></textarea>
+        <div class="alert alert-info text-sm">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="stroke-current shrink-0 w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+          <span>Location will be auto-detected from your current position</span>
+        </div>
         <div class="flex gap-3">
           <button type="submit" class="btn btn-primary flex-1">Submit Report</button>
           <button type="button" onclick="document.getElementById('report_modal').close()" class="btn btn-ghost">Cancel</button>
         </div>
       </form>
       <form method="dialog">
-        <button class="btn btn-circle btn-ghost absolute top-4 right-4">X</button>
+        <button class="btn btn-circle btn-ghost absolute top-4 right-4">✕</button>
       </form>
     </div>
   </dialog>
 
-  <!-- Scripts -->
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js"></script>
-  <script src="https://unpkg.com/leaflet.locatecontrol@0.79.0/dist/L.Control.Locate.min.js"></script>
+  <!-- Google Maps API -->
+  <script async defer src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&callback=initMap"></script>
 
-  <!-- MAP INITIALIZATION (with bulletproof fixes) -->
   <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      // === THEME TOGGLE ===
-      const toggle = document.getElementById("theme-toggle");
-      const html = document.documentElement;
-      const saved = localStorage.getItem("theme");
-      const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    // Theme Toggle
+    const toggle = document.getElementById("theme-toggle");
+    const html = document.documentElement;
+    const saved = localStorage.getItem("theme");
+    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
 
-      if (saved) {
-        html.setAttribute("data-theme", saved);
-        if (toggle) toggle.checked = saved === "dark";
-      } else if (prefersDark) {
-        html.setAttribute("data-theme", "dark");
-        if (toggle) toggle.checked = true;
-      }
+    if (saved) {
+      html.setAttribute("data-theme", saved);
+      if (toggle) toggle.checked = saved === "dark";
+    } else if (prefersDark) {
+      html.setAttribute("data-theme", "dark");
+      if (toggle) toggle.checked = true;
+    }
 
-      if (toggle) {
-        toggle.addEventListener("change", () => {
+    if (toggle) {
+      toggle.addEventListener("change", () => {
         const theme = toggle.checked ? "dark" : "light";
         html.setAttribute("data-theme", theme);
         localStorage.setItem("theme", theme);
+        
+        // Update map theme
+        if (window.map) {
+          updateMapTheme(theme);
+        }
       });
+    }
+
+    // Google Maps variables
+    let map;
+    let markers = [];
+    let userMarker = null;
+    let userLocation = null;
+
+    // Map theme styles
+    const darkMapStyles = [
+      { elementType: "geometry", stylers: [{ color: "#242f3e" }] },
+      { elementType: "labels.text.stroke", stylers: [{ color: "#242f3e" }] },
+      { elementType: "labels.text.fill", stylers: [{ color: "#746855" }] },
+      {
+        featureType: "administrative.locality",
+        elementType: "labels.text.fill",
+        stylers: [{ color: "#d59563" }],
+      },
+      {
+        featureType: "poi",
+        elementType: "labels.text.fill",
+        stylers: [{ color: "#d59563" }],
+      },
+      {
+        featureType: "poi.park",
+        elementType: "geometry",
+        stylers: [{ color: "#263c3f" }],
+      },
+      {
+        featureType: "poi.park",
+        elementType: "labels.text.fill",
+        stylers: [{ color: "#6b9a76" }],
+      },
+      {
+        featureType: "road",
+        elementType: "geometry",
+        stylers: [{ color: "#38414e" }],
+      },
+      {
+        featureType: "road",
+        elementType: "geometry.stroke",
+        stylers: [{ color: "#212a37" }],
+      },
+      {
+        featureType: "road",
+        elementType: "labels.text.fill",
+        stylers: [{ color: "#9ca5b3" }],
+      },
+      {
+        featureType: "road.highway",
+        elementType: "geometry",
+        stylers: [{ color: "#746855" }],
+      },
+      {
+        featureType: "road.highway",
+        elementType: "geometry.stroke",
+        stylers: [{ color: "#1f2835" }],
+      },
+      {
+        featureType: "road.highway",
+        elementType: "labels.text.fill",
+        stylers: [{ color: "#f3d19c" }],
+      },
+      {
+        featureType: "transit",
+        elementType: "geometry",
+        stylers: [{ color: "#2f3948" }],
+      },
+      {
+        featureType: "transit.station",
+        elementType: "labels.text.fill",
+        stylers: [{ color: "#d59563" }],
+      },
+      {
+        featureType: "water",
+        elementType: "geometry",
+        stylers: [{ color: "#17263c" }],
+      },
+      {
+        featureType: "water",
+        elementType: "labels.text.fill",
+        stylers: [{ color: "#515c6d" }],
+      },
+      {
+        featureType: "water",
+        elementType: "labels.text.stroke",
+        stylers: [{ color: "#17263c" }],
+      },
+    ];
+
+    const lightMapStyles = [
+      {
+        featureType: "poi",
+        elementType: "labels",
+        stylers: [{ visibility: "off" }]
       }
+    ];
 
-      // === MAP SETUP ===
-      const map = L.map('map', {
+    function updateMapTheme(theme) {
+      if (map) {
+        map.setOptions({
+          styles: theme === 'dark' ? darkMapStyles : lightMapStyles
+        });
+      }
+    }
+
+    // Initialize Google Map
+    function initMap() {
+      const accra = { lat: 5.6037, lng: -0.1870 };
+      
+      const currentTheme = html.getAttribute('data-theme') || 'light';
+      
+      map = new google.maps.Map(document.getElementById('map'), {
+        zoom: 13,
+        center: accra,
+        styles: currentTheme === 'dark' ? darkMapStyles : lightMapStyles,
+        mapTypeControl: true,
+        mapTypeControlOptions: {
+          style: google.maps.MapTypeControlStyle.DROPDOWN_MENU,
+          position: google.maps.ControlPosition.TOP_RIGHT
+        },
+        fullscreenControl: true,
+        streetViewControl: true,
         zoomControl: true,
-        attributionControl: true
-      }).setView([5.6037, -0.1870], 13);
+        zoomControlOptions: {
+          position: google.maps.ControlPosition.RIGHT_CENTER
+        }
+      });
 
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '© OpenStreetMap contributors'
-      }).addTo(map);
-
-      // CRITICAL: Force map to recalculate size after DOM is ready
-      setTimeout(() => map.invalidateSize(true), 300);
-
-      // Also invalidate on window resize (mobile keyboards, etc.)
-      window.addEventListener('resize', () => map.invalidateSize());
-
-      const markers = L.markerClusterGroup();
-
+      // Sample reports in Accra
       const reports = [
-        {lat:5.6037,lng:-0.1870,title:"Deep Pothole",desc:"Near Accra Mall",status:"warning",up:142,t:"2d"},
-        {lat:5.6140,lng:-0.2050,title:"Broken Street Light",desc:"Very dark",status:"error",up:89,t:"5h"},
-        {lat:5.5910,lng:-0.1790,title:"Illegal Dumping",desc:"Growing pile",status:"error",up:67,t:"1d"},
-        {lat:5.5700,lng:-0.2100,title:"Flooded Road",desc:"Cars stuck",status:"warning",up:201,t:"3d"},
-        {lat:5.6300,lng:-0.1700,title:"Missing Manhole",desc:"Dangerous!",status:"error",up:312,t:"now"},
+        { 
+          position: { lat: 5.6037, lng: -0.1870 }, 
+          title: "Deep Pothole", 
+          desc: "Near Accra Mall, causing accidents",
+          status: "warning",
+          upvotes: 142,
+          time: "2 days ago"
+        },
+        { 
+          position: { lat: 5.6140, lng: -0.2050 }, 
+          title: "Broken Street Light", 
+          desc: "Entire street very dark at night",
+          status: "urgent",
+          upvotes: 89,
+          time: "5 hours ago"
+        },
+        { 
+          position: { lat: 5.5910, lng: -0.1790 }, 
+          title: "Illegal Dumping Site", 
+          desc: "Growing pile of waste",
+          status: "urgent",
+          upvotes: 67,
+          time: "1 day ago"
+        },
+        { 
+          position: { lat: 5.5700, lng: -0.2100 }, 
+          title: "Flooded Road", 
+          desc: "Cars getting stuck regularly",
+          status: "warning",
+          upvotes: 201,
+          time: "3 days ago"
+        },
+        { 
+          position: { lat: 5.6300, lng: -0.1700 }, 
+          title: "Missing Manhole Cover", 
+          desc: "Extremely dangerous for pedestrians!",
+          status: "urgent",
+          upvotes: 312,
+          time: "Just now"
+        }
       ];
 
-      reports.forEach(r => {
-        const badge = r.status === "error" ? "bg-red-500 text-white" : "bg-yellow-500 text-black";
-        const marker = L.marker([r.lat, r.lng], {
-          icon: L.divIcon({
-            html: `<div class="bg-white dark:bg-gray-800 rounded-full w-11 h-11 flex items-center justify-center shadow-2xl border-4 border-white dark:border-gray-900">
-                      <span class="text-3xl font-bold text-red-600">!</span></div>`,
-            iconSize: [44,44],
-            iconAnchor: [22,44]
-          })
-        }).bindPopup(`
-          <div class="p-4 min-w-64">
-            <h3 class="font-bold text-lg">${r.title}</h3>
-            <p class="text-sm opacity-80 mt-1">${r.desc}</p>
-            <div class="flex justify-between items-center mt-4 text-xs font-medium">
-              <span class="px-3 py-1.5 rounded-full ${badge}">${r.status==='error'?'Urgent':'In Progress'}</span>
-              <span>${r.t} • ${r.up} Upvotes</span>
+      // Add report markers
+      reports.forEach(report => {
+        const marker = new google.maps.Marker({
+          position: report.position,
+          map: map,
+          title: report.title,
+          icon: {
+            path: google.maps.SymbolPath.CIRCLE,
+            scale: 12,
+            fillColor: report.status === 'urgent' ? '#ef4444' : '#f59e0b',
+            fillOpacity: 0.9,
+            strokeColor: '#ffffff',
+            strokeWeight: 3
+          },
+          animation: google.maps.Animation.DROP
+        });
+
+        const badgeColor = report.status === 'urgent' ? '#ef4444' : '#f59e0b';
+        const badgeText = report.status === 'urgent' ? 'Urgent' : 'In Progress';
+
+        const infoWindow = new google.maps.InfoWindow({
+          content: `
+            <div style="padding: 16px; min-width: 250px; font-family: 'Inter', sans-serif;">
+              <h3 style="font-weight: bold; font-size: 18px; margin-bottom: 8px; color: #1f2937;">${report.title}</h3>
+              <p style="color: #6b7280; margin-bottom: 12px; font-size: 14px;">${report.desc}</p>
+              <div style="display: flex; justify-content: space-between; align-items: center; font-size: 12px;">
+                <span style="background: ${badgeColor}; color: white; padding: 6px 14px; border-radius: 9999px; font-weight: 600;">
+                  ${badgeText}
+                </span>
+                <span style="color: #9ca3af;">${report.time} • ${report.upvotes} upvotes</span>
+              </div>
             </div>
-          </div>
-        `);
-        markers.addLayer(marker);
+          `
+        });
+
+        marker.addListener('click', () => {
+          infoWindow.open(map, marker);
+        });
+
+        markers.push(marker);
       });
 
-      map.addLayer(markers);
+      // Get user's location
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            userLocation = {
+              lat: position.coords.latitude,
+              lng: position.coords.longitude
+            };
+            
+            // Center map on user location
+            map.setCenter(userLocation);
+            map.setZoom(15);
+            
+            // Add user location marker
+            userMarker = new google.maps.Marker({
+              position: userLocation,
+              map: map,
+              title: "Your Location",
+              icon: {
+                path: google.maps.SymbolPath.CIRCLE,
+                scale: 10,
+                fillColor: '#3b82f6',
+                fillOpacity: 1,
+                strokeColor: '#ffffff',
+                strokeWeight: 4
+              },
+              animation: google.maps.Animation.BOUNCE
+            });
 
-      // My Location Button
-      L.control.locate({
-        position: 'topleft',
-        strings: { title: "Show my location" },
-        flyTo: true
-      }).addTo(map);
-    });
+            setTimeout(() => {
+              userMarker.setAnimation(null);
+            }, 2000);
+
+            const userInfoWindow = new google.maps.InfoWindow({
+              content: `
+                <div style="padding: 12px; font-family: 'Inter', sans-serif;">
+                  <h3 style="font-weight: bold; color: #1f2937;">You are here</h3>
+                  <p style="font-size: 12px; color: #6b7280; margin-top: 4px;">Current location</p>
+                </div>
+              `
+            });
+
+            userMarker.addListener('click', () => {
+              userInfoWindow.open(map, userMarker);
+            });
+          },
+          (error) => {
+            console.error('Geolocation error:', error.message);
+          },
+          {
+            enableHighAccuracy: true,
+            timeout: 5000,
+            maximumAge: 0
+          }
+        );
+      }
+
+      // Add "My Location" button
+      const locationButton = document.createElement("button");
+      locationButton.textContent = "📍 My Location";
+      locationButton.className = "btn btn-sm btn-primary";
+      locationButton.style.margin = "10px";
+      
+      locationButton.addEventListener("click", () => {
+        if (userLocation) {
+          map.setCenter(userLocation);
+          map.setZoom(16);
+          if (userMarker) {
+            userMarker.setAnimation(google.maps.Animation.BOUNCE);
+            setTimeout(() => userMarker.setAnimation(null), 1500);
+          }
+        } else {
+          alert("Location not available. Please enable location services.");
+        }
+      });
+
+      map.controls[google.maps.ControlPosition.TOP_CENTER].push(locationButton);
+    }
+
+    // Handle report submission
+    function handleReportSubmit(event) {
+      event.preventDefault();
+      
+      const title = document.getElementById('reportTitle').value;
+      const description = document.getElementById('reportDescription').value;
+      
+      if (userLocation) {
+        // Create new marker at user's location
+        const newMarker = new google.maps.Marker({
+          position: userLocation,
+          map: map,
+          title: title,
+          icon: {
+            path: google.maps.SymbolPath.CIRCLE,
+            scale: 12,
+            fillColor: '#10b981',
+            fillOpacity: 0.9,
+            strokeColor: '#ffffff',
+            strokeWeight: 3
+          },
+          animation: google.maps.Animation.DROP
+        });
+
+        const infoWindow = new google.maps.InfoWindow({
+          content: `
+            <div style="padding: 16px; min-width: 250px; font-family: 'Inter', sans-serif;">
+              <h3 style="font-weight: bold; font-size: 18px; margin-bottom: 8px; color: #1f2937;">${title}</h3>
+              <p style="color: #6b7280; margin-bottom: 12px; font-size: 14px;">${description}</p>
+              <div style="display: flex; justify-content: space-between; align-items: center; font-size: 12px;">
+                <span style="background: #10b981; color: white; padding: 6px 14px; border-radius: 9999px; font-weight: 600;">
+                  New Report
+                </span>
+                <span style="color: #9ca3af;">Just now</span>
+              </div>
+            </div>
+          `
+        });
+
+        newMarker.addListener('click', () => {
+          infoWindow.open(map, newMarker);
+        });
+
+        markers.push(newMarker);
+        
+        // Pan to new marker and open info window
+        map.panTo(userLocation);
+        setTimeout(() => {
+          infoWindow.open(map, newMarker);
+        }, 500);
+
+        alert('Report submitted successfully!');
+      } else {
+        alert('Report submitted successfully! (Location will be determined)');
+      }
+      
+      document.getElementById('report_modal').close();
+      event.target.reset();
+    }
   </script>
 </body>
 </html>
