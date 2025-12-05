@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>MyCommunity — Report Local Issues</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    html { scroll-behavior: smooth; }
+    .hero-bg {
+      background-image: linear-gradient(120deg, rgba(7,89,133,0.6), rgba(14,165,233,0.35)), url('https://images.unsplash.com/photo-1520975910334-4fef9a0d9d1f?q=80&w=1920&auto=format&fit=crop');
+      background-size: cover;
+      background-position: center;
+    }
+    .status-badge { font-weight:600; font-size:.75rem }
+  </style>
+</head>
+<body>
+
+     <!-- Header -->
+  <header class="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-gray-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6">
+      <div class="flex items-center justify-between h-16">
+        <div class="flex items-center space-x-3">
+          <img src="" class="w-11 h-11 rounded-full object-cover" />
+          <div>
+            <a class="font-semibold text-lg text-sky-700">MyCommunity</a>
+            <div class="text-xs text-gray-500 -mt-0.5">Community-driven reporting</div>
+          </div>
+        </div>
+
+        <nav class="hidden md:flex items-center space-x-6">
+          <a href="/pix.html" class="text-gray-700 hover:text-sky-600">Home</a>
+          <a href="/dashboard.html" class="text-gray-700 hover:text-sky-600">Dashboard</a>
+          <a href="#reports" class="text-gray-700 hover:text-sky-600">Report List</a>
+          <a href="#join" class="ml-2 px-4 py-2 bg-sky-600 hover:bg-sky-700 text-white rounded-lg shadow-sm">Join Now</a>
+        </nav>
+
+        <div class="md:hidden">
+          <button id="mobileMenuBtn" aria-expanded="false">
+            <svg id="hamburgerIcon" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8h16M4 16h16"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div id="mobileMenu" class="md:hidden hidden border-t border-gray-100">
+      <div class="px-4 pt-4 pb-6 space-y-3">
+        <a href="#home" class="block px-3 py-2 rounded-md text-gray-700">Home</a>
+        <a href="#dashboard" class="block px-3 py-2 text-gray-700">Dashboard</a>
+        <a href="#reports" class="block px-3 py-2 text-gray-700">Report List</a>
+        <a href="#join" class="block mt-2 px-4 py-2 bg-sky-600 text-white rounded-lg">Join Now</a>
+      </div>
+    </div>
+  </header>
+
+     <!-- Dashboard -->
+  <section id="dashboard" class="py-20 bg-gradient-to-b from-blue-50 to-white">
+    <div class="max-w-7xl mx-auto px-6">
+      <h2 class="text-4xl font-bold mb-12 text-center">Dashboard Overview</h2>
+
+      <div class="grid md:grid-cols-4 gap-6">
+        <div class="bg-white rounded-xl shadow-lg p-6 flex flex-col items-center">
+          <div class="text-4xl text-blue-600 mb-2">📋</div>
+          <div class="text-sm text-gray-600 mb-2">Total Reports</div>
+          <div class="text-3xl font-bold">127</div>
+          <div class="text-sm text-green-600 mt-2">↑ 12% this month</div>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-lg p-6 flex flex-col items-center">
+          <div class="text-4xl text-orange-500 mb-2">⏳</div>
+          <div class="text-sm text-gray-600 mb-2">In Progress</div>
+          <div class="text-3xl font-bold text-orange-500">34</div>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-lg p-6 flex flex-col items-center">
+          <div class="text-4xl text-green-600 mb-2">✅</div>
+          <div class="text-sm text-gray-600 mb-2">Resolved</div>
+          <div class="text-3xl font-bold text-green-600">89</div>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-lg p-6 flex flex-col items-center">
+          <div class="text-4xl text-blue-600 mb-2">👤</div>
+          <div class="text-sm text-gray-600 mb-2">Your Reports</div>
+          <div class="text-3xl font-bold text-blue-600">8</div>
+        </div>
+      </div>
+    </div>
+  </section>
+</body>
+</html>
