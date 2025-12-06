@@ -1,512 +1,155 @@
 <!DOCTYPE html>
-<html lang="en" class="scroll-smooth" data-theme="light">
+<html lang="en" data-theme="light">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Live Map – MyCommunity</title>
-
-  <!-- Tailwind + DaisyUI -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" />
-
-  <!-- Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-
+  <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <style>
-    html, body {
-      height: 100%;
-      margin: 0;
-      padding: 0;
-      overflow: hidden;
-      font-family: 'Inter', sans-serif;
-    }
-
-    #map {
-      position: absolute;
-      top: 5rem;
-      left: 0;
-      width: 100%;
-      bottom: 0;
-      z-index: 1;
-    }
-
-    .header-bar {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      background: rgba(0, 0, 0, 0.65);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-      z-index: 1000;
-      padding: 1rem 0;
-    }
-
-    .fab {
-      position: fixed;
-      bottom: 24px;
-      right: 24px;
-      z-index: 1000;
-    }
-
-    html[data-theme="dark"] #map {
-      background: #0f172a !important;
-    }
-
-    /* Custom info window styling */
-    .gm-style .gm-style-iw-c {
-      border-radius: 12px !important;
-      padding: 0 !important;
-    }
-
-    .gm-style .gm-style-iw-d {
-      overflow: auto !important;
-    }
+    html, body, #map { height: 100%; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+    .header { position: fixed; top: 0; left: 0; right: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(16px); z-index: 1000; }
+    .fab { position: fixed; bottom: 24px; right: 24px; z-index: 1000; }
+    @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(59,130,246,0.7); } 70% { box-shadow: 0 0 0 15px rgba(59,130,246,0); } 100% { box-shadow: 0 0 0 0 rgba(59,130,246,0); } }
   </style>
 </head>
-
 <body>
 
-  <!-- GLASS HEADER -->
-  <div class="header-bar text-white">
-    <div class="flex justify-between items-center px-4 max-w-7xl mx-auto">
-      <a href="/" class="btn btn-circle btn-ghost hover:bg-white/20 transition">
-        <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/>
-        </svg>
-      </a>
-
-      <div class="text-center">
-        <h1 class="text-2xl md:text-3xl font-bold">Live Issues Map</h1>
-        <p class="text-sm opacity-90 hidden sm:block">Tap markers for details</p>
-      </div>
-
-      <label class="swap swap-rotate btn btn-circle btn-ghost hover:bg-white/20">
-        <input type="checkbox" class="theme-controller" id="theme-toggle" />
-        <svg class="swap-on fill-current w-6 h-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-          <path d="M12 6.5A5.5 5.5 0 1 0 17.5 12 5.51 5.51 0 0 0 12 6.5Zm0 9A3.5 3.5 0 1 1 15.5 12 3.5 3.5 0 0 1 12 15.5Z"/>
-        </svg>
-        <svg class="swap-off fill-current w-6 h-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-          <path d="M21.64 13a1 1 0 0 0-1.05-.14 8.05 8.05 0 0 1-3.37.73A8.15 8.15 0 0 1 9.08 5.49a8.59 8.59 0 0 1 .25-2 1 1 0 0 0-1.33-1.13A10.14 10.14 0 1 0 22 14.05 1 1 0 0 0 21.64 13Z"/>
-        </svg>
-      </label>
-    </div>
+  <div class="header text-white py-3 px-4 flex justify-between items-center">
+    <a href="index.html" class="btn btn-circle btn-ghost">←</a>
+    <h1 class="text-xl font-bold">Live Issues Map</h1>
+    <label class="swap swap-rotate btn btn-circle btn-ghost">
+      <input type="checkbox" class="theme-controller" id="theme-toggle" />
+      <svg class="swap-on w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 6.5A5.5 5.5 0 1 0 17.5 12 5.51 5.51 0 0 0 12 6.5Zm0 9A3.5 3.5 0 1 1 15.5 12 3.5 3.5 0 0 1 12 15.5Z"/></svg>
+      <svg class="swap-off w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M21.64 13a1 1 0 0 0-1.05-.14 8.05 8.05 0 0 1-3.37.73A8.15 8.15 0 0 1 9.08 5.49a8.59 8.59 0 0 1 .25-2 1 1 0 0 0-1.33-1.13A10.14 10.14 0 1 0 22 14.05 1 1 0 0 0 21.64 13Z"/></svg>
+    </label>
   </div>
 
-  <!-- Floating Report Button -->
-  <button onclick="document.getElementById('report_modal').showModal()" 
-    class="fab btn btn-circle btn-lg shadow-2xl btn-primary text-white text-3xl hover:scale-110 transition">
-    +
-  </button>
-
-  <!-- Map Container -->
+  <button onclick="document.getElementById('report_modal').showModal()" class="fab btn btn-circle btn-lg btn-primary shadow-2xl text-3xl">+</button>
   <div id="map"></div>
 
-  <!-- Report Modal -->
   <dialog id="report_modal" class="modal modal-bottom sm:modal-middle">
     <div class="modal-box">
       <h3 class="font-bold text-2xl mb-6">Report New Issue</h3>
-      <form class="space-y-5" onsubmit="handleReportSubmit(event)">
-        <input type="text" id="reportTitle" placeholder="Title..." class="input input-bordered w-full" required />
-        <textarea id="reportDescription" class="textarea textarea-bordered w-full h-32" placeholder="Describe the issue..." required></textarea>
-        <div class="alert alert-info text-sm">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="stroke-current shrink-0 w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-          <span>Location will be auto-detected from your current position</span>
-        </div>
+      <form onsubmit="handleReport(event)">
+        <input id="title" type="text" placeholder="Title..." class="input input-bordered w-full mb-4" required />
+        <textarea id="desc" class="textarea textarea-bordered w-full h-32 mb-4" placeholder="Describe..." required></textarea>
         <div class="flex gap-3">
-          <button type="submit" class="btn btn-primary flex-1">Submit Report</button>
+          <button type="submit" class="btn btn-primary flex-1">Submit</button>
           <button type="button" onclick="document.getElementById('report_modal').close()" class="btn btn-ghost">Cancel</button>
         </div>
       </form>
-      <form method="dialog">
-        <button class="btn btn-circle btn-ghost absolute top-4 right-4">✕</button>
-      </form>
+      <form method="dialog"><button class="btn btn-circle btn-ghost absolute top-4 right-4">X</button></form>
     </div>
   </dialog>
 
-  <!-- Google Maps API -->
-  <script async defer src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&callback=initMap"></script>
-
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script>
-    // Theme Toggle
-    const toggle = document.getElementById("theme-toggle");
+    // DUMMY DATA GENERATOR
+    (function() {
+      const existingReports = localStorage.getItem("allReports");
+      if (!existingReports || JSON.parse(existingReports).length === 0) {
+        const titles = ["Large pothole on Main Street","Broken streetlight near school","Overflowing trash bin at Labadi","Damaged sidewalk","Graffiti on wall","Abandoned vehicle","Fallen tree blocking path","Leaking fire hydrant","Broken playground equipment","Illegal dumping","Street sign down","Cracked road surface","Blocked storm drain","Dangerous intersection","Vandalized park bench","Missing manhole cover","Overgrown vegetation","Damaged bus shelter","Street flooding","Broken water fountain","Faded crossing markings","Construction noise","Stray dogs","Poor street lighting","Illegal parking","Damaged speed bump","Broken traffic light","Uncollected garbage","Mosquito breeding pothole","Damaged road signs","Broken fence","Flooded gutter","Cracked pavement","Non-functioning signal","Damaged toilet facility","Vendors blocking walkway","Broken bench","Overhanging wires","Erosion damage","Collapsed wall","Broken street sign","Pothole cluster","Damaged curb","Leaking pipe","Rusted playground slide","Blocked culvert","Faded lane markings","Damaged phone booth","Broken shelter glass","Overgrown weeds"];
+        const descriptions = ["This has been a problem for weeks and is getting worse. Dangerous for everyone.","Urgent attention needed as it poses safety risk to residents.","Please fix ASAP. Many complaints filed.","Affecting quality of life in neighborhood.","Been reporting for months. Still not fixed.","Children play here. Needs immediate attention.","Multiple injury reports from this issue.","Problem occurs during rush hour.","Major health and safety concern.","Local businesses affected by this.","Elderly residents at risk.","Needs city council priority.","Emergency access may be blocked.","Getting progressively worse daily.","Community willing to help if needed."];
+        const statuses = ["urgent","warning","warning","warning"];
+        const times = ["Just now","5 mins ago","1 hour ago","3 hours ago","Yesterday","2 days ago","1 week ago","2 weeks ago"];
+        const locations = [{name:"Osu",lat:5.5558,lng:-0.1826},{name:"Labadi",lat:5.5825,lng:-0.1547},{name:"East Legon",lat:5.6378,lng:-0.1522},{name:"Madina",lat:5.6797,lng:-0.1669},{name:"Kaneshie",lat:5.5686,lng:-0.2347}];
+        const users = [{name:"Kwame Mensah",email:"kwame@gmail.com",avatar:"https://api.dicebear.com/7.x/avataaars/svg?seed=kwame"},{name:"Ama Asante",email:"ama@gmail.com",avatar:"https://api.dicebear.com/7.x/avataaars/svg?seed=ama"},{name:"Kofi Boateng",email:"kofi@gmail.com",avatar:"https://api.dicebear.com/7.x/avataaars/svg?seed=kofi"}];
+        const images = ["https://images.unsplash.com/photo-1625481506955-e5db7b9c9d48?w=600","https://images.unsplash.com/photo-1589939705384-5185137a7f0f?w=600","https://images.unsplash.com/photo-1616422285623-13ff0162193c?w=600",null,null];
+        
+        const reports = [];
+        for (let i = 0; i < 50; i++) {
+          const user = users[Math.floor(Math.random() * users.length)];
+          const loc = locations[Math.floor(Math.random() * locations.length)];
+          reports.push({
+            id: `report_${Date.now()}_${i}`,
+            title: titles[i % titles.length],
+            desc: descriptions[Math.floor(Math.random() * descriptions.length)],
+            image: images[Math.floor(Math.random() * images.length)],
+            lat: loc.lat + (Math.random()-0.5)*0.02,
+            lng: loc.lng + (Math.random()-0.5)*0.02,
+            time: times[Math.floor(Math.random() * times.length)],
+            upvotes: Math.floor(Math.random() * 50),
+            status: statuses[Math.floor(Math.random() * statuses.length)],
+            userId: user.email,
+            userName: user.name
+          });
+        }
+        localStorage.setItem("allReports", JSON.stringify(reports));
+      }
+      if (!localStorage.getItem("user")) {
+        localStorage.setItem("user", JSON.stringify({name:"Demo User",email:"demo@mycommunity.com",avatar:"https://api.dicebear.com/7.x/avataaars/svg?seed=demo"}));
+      }
+    })();
+
     const html = document.documentElement;
-    const saved = localStorage.getItem("theme");
-    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    const toggle = document.getElementById("theme-toggle");
+    const saved = localStorage.getItem("theme") || (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+    html.setAttribute("data-theme", saved);
+    if (toggle) toggle.checked = saved === "dark";
+    toggle?.addEventListener("change", () => {
+      const t = toggle.checked ? "dark" : "light";
+      html.setAttribute("data-theme", t);
+      localStorage.setItem("theme", t);
+      updateTiles(t);
+    });
 
-    if (saved) {
-      html.setAttribute("data-theme", saved);
-      if (toggle) toggle.checked = saved === "dark";
-    } else if (prefersDark) {
-      html.setAttribute("data-theme", "dark");
-      if (toggle) toggle.checked = true;
+    let map, userLoc;
+    const light = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+    const dark = 'https://cartodb-basemaps-{s}.global.ssl.fastly.net/dark_all/{z}/{x}/{y}.png';
+    let layer = L.tileLayer(light, { attribution: '&copy; OpenStreetMap' });
+
+    function updateTiles(theme) {
+      if (layer) map.removeLayer(layer);
+      layer = L.tileLayer(theme === 'dark' ? dark : light, { attribution: theme === 'dark' ? '&copy; CartoDB' : '&copy; OpenStreetMap' });
+      layer.addTo(map);
     }
 
-    if (toggle) {
-      toggle.addEventListener("change", () => {
-        const theme = toggle.checked ? "dark" : "light";
-        html.setAttribute("data-theme", theme);
-        localStorage.setItem("theme", theme);
-        
-        // Update map theme
-        if (window.map) {
-          updateMapTheme(theme);
-        }
-      });
-    }
-
-    // Google Maps variables
-    let map;
-    let markers = [];
-    let userMarker = null;
-    let userLocation = null;
-
-    // Map theme styles
-    const darkMapStyles = [
-      { elementType: "geometry", stylers: [{ color: "#242f3e" }] },
-      { elementType: "labels.text.stroke", stylers: [{ color: "#242f3e" }] },
-      { elementType: "labels.text.fill", stylers: [{ color: "#746855" }] },
-      {
-        featureType: "administrative.locality",
-        elementType: "labels.text.fill",
-        stylers: [{ color: "#d59563" }],
-      },
-      {
-        featureType: "poi",
-        elementType: "labels.text.fill",
-        stylers: [{ color: "#d59563" }],
-      },
-      {
-        featureType: "poi.park",
-        elementType: "geometry",
-        stylers: [{ color: "#263c3f" }],
-      },
-      {
-        featureType: "poi.park",
-        elementType: "labels.text.fill",
-        stylers: [{ color: "#6b9a76" }],
-      },
-      {
-        featureType: "road",
-        elementType: "geometry",
-        stylers: [{ color: "#38414e" }],
-      },
-      {
-        featureType: "road",
-        elementType: "geometry.stroke",
-        stylers: [{ color: "#212a37" }],
-      },
-      {
-        featureType: "road",
-        elementType: "labels.text.fill",
-        stylers: [{ color: "#9ca5b3" }],
-      },
-      {
-        featureType: "road.highway",
-        elementType: "geometry",
-        stylers: [{ color: "#746855" }],
-      },
-      {
-        featureType: "road.highway",
-        elementType: "geometry.stroke",
-        stylers: [{ color: "#1f2835" }],
-      },
-      {
-        featureType: "road.highway",
-        elementType: "labels.text.fill",
-        stylers: [{ color: "#f3d19c" }],
-      },
-      {
-        featureType: "transit",
-        elementType: "geometry",
-        stylers: [{ color: "#2f3948" }],
-      },
-      {
-        featureType: "transit.station",
-        elementType: "labels.text.fill",
-        stylers: [{ color: "#d59563" }],
-      },
-      {
-        featureType: "water",
-        elementType: "geometry",
-        stylers: [{ color: "#17263c" }],
-      },
-      {
-        featureType: "water",
-        elementType: "labels.text.fill",
-        stylers: [{ color: "#515c6d" }],
-      },
-      {
-        featureType: "water",
-        elementType: "labels.text.stroke",
-        stylers: [{ color: "#17263c" }],
-      },
-    ];
-
-    const lightMapStyles = [
-      {
-        featureType: "poi",
-        elementType: "labels",
-        stylers: [{ visibility: "off" }]
-      }
-    ];
-
-    function updateMapTheme(theme) {
-      if (map) {
-        map.setOptions({
-          styles: theme === 'dark' ? darkMapStyles : lightMapStyles
-        });
-      }
-    }
-
-    // Initialize Google Map
-    function initMap() {
-      const accra = { lat: 5.6037, lng: -0.1870 };
-      
-      const currentTheme = html.getAttribute('data-theme') || 'light';
-      
-      map = new google.maps.Map(document.getElementById('map'), {
-        zoom: 13,
-        center: accra,
-        styles: currentTheme === 'dark' ? darkMapStyles : lightMapStyles,
-        mapTypeControl: true,
-        mapTypeControlOptions: {
-          style: google.maps.MapTypeControlStyle.DROPDOWN_MENU,
-          position: google.maps.ControlPosition.TOP_RIGHT
-        },
-        fullscreenControl: true,
-        streetViewControl: true,
-        zoomControl: true,
-        zoomControlOptions: {
-          position: google.maps.ControlPosition.RIGHT_CENTER
-        }
-      });
-
-      // Sample reports in Accra
-      const reports = [
-        { 
-          position: { lat: 5.6037, lng: -0.1870 }, 
-          title: "Deep Pothole", 
-          desc: "Near Accra Mall, causing accidents",
-          status: "warning",
-          upvotes: 142,
-          time: "2 days ago"
-        },
-        { 
-          position: { lat: 5.6140, lng: -0.2050 }, 
-          title: "Broken Street Light", 
-          desc: "Entire street very dark at night",
-          status: "urgent",
-          upvotes: 89,
-          time: "5 hours ago"
-        },
-        { 
-          position: { lat: 5.5910, lng: -0.1790 }, 
-          title: "Illegal Dumping Site", 
-          desc: "Growing pile of waste",
-          status: "urgent",
-          upvotes: 67,
-          time: "1 day ago"
-        },
-        { 
-          position: { lat: 5.5700, lng: -0.2100 }, 
-          title: "Flooded Road", 
-          desc: "Cars getting stuck regularly",
-          status: "warning",
-          upvotes: 201,
-          time: "3 days ago"
-        },
-        { 
-          position: { lat: 5.6300, lng: -0.1700 }, 
-          title: "Missing Manhole Cover", 
-          desc: "Extremely dangerous for pedestrians!",
-          status: "urgent",
-          upvotes: 312,
-          time: "Just now"
-        }
-      ];
-
-      // Add report markers
-      reports.forEach(report => {
-        const marker = new google.maps.Marker({
-          position: report.position,
-          map: map,
-          title: report.title,
-          icon: {
-            path: google.maps.SymbolPath.CIRCLE,
-            scale: 12,
-            fillColor: report.status === 'urgent' ? '#ef4444' : '#f59e0b',
-            fillOpacity: 0.9,
-            strokeColor: '#ffffff',
-            strokeWeight: 3
-          },
-          animation: google.maps.Animation.DROP
-        });
-
-        const badgeColor = report.status === 'urgent' ? '#ef4444' : '#f59e0b';
-        const badgeText = report.status === 'urgent' ? 'Urgent' : 'In Progress';
-
-        const infoWindow = new google.maps.InfoWindow({
-          content: `
-            <div style="padding: 16px; min-width: 250px; font-family: 'Inter', sans-serif;">
-              <h3 style="font-weight: bold; font-size: 18px; margin-bottom: 8px; color: #1f2937;">${report.title}</h3>
-              <p style="color: #6b7280; margin-bottom: 12px; font-size: 14px;">${report.desc}</p>
-              <div style="display: flex; justify-content: space-between; align-items: center; font-size: 12px;">
-                <span style="background: ${badgeColor}; color: white; padding: 6px 14px; border-radius: 9999px; font-weight: 600;">
-                  ${badgeText}
-                </span>
-                <span style="color: #9ca3af;">${report.time} • ${report.upvotes} upvotes</span>
-              </div>
-            </div>
-          `
-        });
-
-        marker.addListener('click', () => {
-          infoWindow.open(map, marker);
-        });
-
-        markers.push(marker);
-      });
-
-      // Get user's location
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-          (position) => {
-            userLocation = {
-              lat: position.coords.latitude,
-              lng: position.coords.longitude
-            };
-            
-            // Center map on user location
-            map.setCenter(userLocation);
-            map.setZoom(15);
-            
-            // Add user location marker
-            userMarker = new google.maps.Marker({
-              position: userLocation,
-              map: map,
-              title: "Your Location",
-              icon: {
-                path: google.maps.SymbolPath.CIRCLE,
-                scale: 10,
-                fillColor: '#3b82f6',
-                fillOpacity: 1,
-                strokeColor: '#ffffff',
-                strokeWeight: 4
-              },
-              animation: google.maps.Animation.BOUNCE
-            });
-
-            setTimeout(() => {
-              userMarker.setAnimation(null);
-            }, 2000);
-
-            const userInfoWindow = new google.maps.InfoWindow({
-              content: `
-                <div style="padding: 12px; font-family: 'Inter', sans-serif;">
-                  <h3 style="font-weight: bold; color: #1f2937;">You are here</h3>
-                  <p style="font-size: 12px; color: #6b7280; margin-top: 4px;">Current location</p>
-                </div>
-              `
-            });
-
-            userMarker.addListener('click', () => {
-              userInfoWindow.open(map, userMarker);
-            });
-          },
-          (error) => {
-            console.error('Geolocation error:', error.message);
-          },
-          {
-            enableHighAccuracy: true,
-            timeout: 5000,
-            maximumAge: 0
-          }
-        );
-      }
-
-      // Add "My Location" button
-      const locationButton = document.createElement("button");
-      locationButton.textContent = "📍 My Location";
-      locationButton.className = "btn btn-sm btn-primary";
-      locationButton.style.margin = "10px";
-      
-      locationButton.addEventListener("click", () => {
-        if (userLocation) {
-          map.setCenter(userLocation);
-          map.setZoom(16);
-          if (userMarker) {
-            userMarker.setAnimation(google.maps.Animation.BOUNCE);
-            setTimeout(() => userMarker.setAnimation(null), 1500);
-          }
-        } else {
-          alert("Location not available. Please enable location services.");
-        }
-      });
-
-      map.controls[google.maps.ControlPosition.TOP_CENTER].push(locationButton);
-    }
-
-    // Handle report submission
-    function handleReportSubmit(event) {
-      event.preventDefault();
-      
-      const title = document.getElementById('reportTitle').value;
-      const description = document.getElementById('reportDescription').value;
-      
-      if (userLocation) {
-        // Create new marker at user's location
-        const newMarker = new google.maps.Marker({
-          position: userLocation,
-          map: map,
-          title: title,
-          icon: {
-            path: google.maps.SymbolPath.CIRCLE,
-            scale: 12,
-            fillColor: '#10b981',
-            fillOpacity: 0.9,
-            strokeColor: '#ffffff',
-            strokeWeight: 3
-          },
-          animation: google.maps.Animation.DROP
-        });
-
-        const infoWindow = new google.maps.InfoWindow({
-          content: `
-            <div style="padding: 16px; min-width: 250px; font-family: 'Inter', sans-serif;">
-              <h3 style="font-weight: bold; font-size: 18px; margin-bottom: 8px; color: #1f2937;">${title}</h3>
-              <p style="color: #6b7280; margin-bottom: 12px; font-size: 14px;">${description}</p>
-              <div style="display: flex; justify-content: space-between; align-items: center; font-size: 12px;">
-                <span style="background: #10b981; color: white; padding: 6px 14px; border-radius: 9999px; font-weight: 600;">
-                  New Report
-                </span>
-                <span style="color: #9ca3af;">Just now</span>
-              </div>
-            </div>
-          `
-        });
-
-        newMarker.addListener('click', () => {
-          infoWindow.open(map, newMarker);
-        });
-
-        markers.push(newMarker);
-        
-        // Pan to new marker and open info window
-        map.panTo(userLocation);
-        setTimeout(() => {
-          infoWindow.open(map, newMarker);
-        }, 500);
-
-        alert('Report submitted successfully!');
-      } else {
-        alert('Report submitted successfully! (Location will be determined)');
-      }
-      
+    function handleReport(e) {
+      e.preventDefault();
+      if (!userLoc) return alert("Getting your location...");
+      const title = document.getElementById("title").value;
+      const desc = document.getElementById("desc").value;
+      const icon = L.divIcon({ html: `<div style="background:#10b981;width:16px;height:16px;border-radius:50%;border:4px solid white;"></div>`, iconSize: [24,24], iconAnchor: [12,12] });
+      L.marker(userLoc, { icon }).addTo(map).bindPopup(`<b>${title}</b><br>${desc}<br><span class="badge badge-success">New</span>`).openPopup();
+      map.panTo(userLoc);
       document.getElementById('report_modal').close();
-      event.target.reset();
+      e.target.reset();
     }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      map = L.map('map').setView([5.6037, -0.1870], 13);
+      layer.addTo(map);
+
+      const urgent = L.divIcon({ html: `<div style="background:#ef4444;width:16px;height:16px;border-radius:50%;border:4px solid white;"></div>`, iconSize: [24,24], iconAnchor: [12,12] });
+      const warning = L.divIcon({ html: `<div style="background:#f59e0b;width:16px;height:16px;border-radius:50%;border:4px solid white;"></div>`, iconSize: [24,24], iconAnchor: [12,12] });
+
+      // Load all reports from localStorage and add to map
+      const allReports = JSON.parse(localStorage.getItem("allReports") || "[]");
+      allReports.forEach(r => {
+        if (r.lat && r.lng) {
+          const icon = r.status === 'urgent' ? urgent : warning;
+          const popupContent = `
+            ${r.image ? `<img src="${r.image}" style="width:100%;max-width:200px;border-radius:8px;margin-bottom:8px;">` : ''}
+            <b>${r.title}</b><br>
+            <p style="font-size:12px;margin:4px 0;">${r.desc}</p>
+            <div style="font-size:11px;color:#666;margin-top:4px;">
+              <span class="badge ${r.status === 'urgent' ? 'badge-error' : 'badge-warning'}">${r.status === 'urgent' ? 'Urgent' : 'Warning'}</span>
+              • ${r.upvotes || 0} upvotes • ${r.time}
+            </div>
+          `;
+          L.marker([r.lat, r.lng], { icon }).addTo(map).bindPopup(popupContent);
+        }
+      });
+
+      navigator.geolocation.getCurrentPosition(pos => {
+        userLoc = [pos.coords.latitude, pos.coords.longitude];
+        map.setView(userLoc, 15);
+        L.marker(userLoc, { icon: L.divIcon({ html: `<div style="background:#3b82f6;width:14px;height:14px;border-radius:50%;border:4px solid white;animation:pulse 2s infinite;"></div>`, iconSize: [22,22], iconAnchor: [11,11] }) })
+          .addTo(map).bindPopup("You are here").openPopup();
+      });
+    });
   </script>
 </body>
 </html>

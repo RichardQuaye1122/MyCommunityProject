@@ -1,30 +1,208 @@
-<!-- reports.html -->
-<title>All Reports — MyCommunity</title>
-<!-- Same head & navbar as above -->
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>All Reports – MyCommunity</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet">
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    .report-image { height: 200px; object-fit: cover; }
+  </style>
+</head>
+<body class="bg-base-200 min-h-screen">
 
-<section class="py-24 max-w-7xl mx-auto px-6">
-  <h1 class="text-5xl font-bold text-center mb-12">All Community Reports</h1>
-  
-  <div class="tabs tabs-boxed justify-center mb-10">
-    <a class="tab tab-active">All</a> 
-    <a class="tab">In Progress</a>
-    <a class="tab">Resolved</a>
-    <a class="tab">Urgent</a>
+  <div class="navbar bg-base-100 shadow-lg sticky top-0 z-40">
+    <div class="navbar-start"><a href="index.html" class="btn btn-ghost text-xl">MyCommunity</a></div>
+    <div class="navbar-center hidden lg:flex">
+      <ul class="menu menu-horizontal px-1">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="map.html">Map</a></li>
+        <li><a href="dashboard.html">Dashboard</a></li>
+        <li><a href="reports.html" class="font-bold text-primary">Reports</a></li>
+      </ul>
+    </div>
+    <div class="navbar-end px-4" id="auth-section"></div>
   </div>
 
-  <div class="grid md:grid-cols-3 gap-8">
-    <!-- Report Cards (same as homepage but more) -->
-    <div class="card bg-base-100 shadow-xl hover:shadow-2xl transition-all">
-      <figure><img src="https://images.unsplash.com/photo-1593113598332-cd5a0f45ec9e?q=80&w=800" class="h-48 object-cover"/></figure>
-      <div class="card-body">
-        <h2 class="card-title">Broken Traffic Light</h2>
-        <p>High-risk intersection. Needs urgent fix!</p>
-        <div class="flex justify-between mt-4">
-          <div class="badge badge-error">Urgent</div>
-          <div class="text-sm">2 days ago • 312 upvotes</div>
+  <div class="bg-gradient-to-br from-sky-600 to-blue-800 py-20 text-white">
+    <div class="max-w-7xl mx-auto px-6 text-center">
+      <h1 class="text-5xl font-bold">All Community Reports</h1>
+      <p class="text-xl mt-4 opacity-90">View and upvote issues in your neighborhood</p>
+    </div>
+  </div>
+
+  <div class="max-w-7xl mx-auto px-6 py-12">
+    <div id="reports-container" class="grid md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
+    <div id="no-reports" class="text-center py-20 text-xl opacity-70 hidden">No reports yet.</div>
+  </div>
+
+  <footer class="mt-10 py-12 w-full bg-blue-600 border-t border-base-200">
+    <div class="max-w-7xl mx-auto px-4 py-8">
+      <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+        <div class="flex items-center gap-3">
+          <img src="images/logo.png" alt="MyCommunity Logo" class="w-10 h-10 rounded-lg">
+          <div>
+            <h3 class="font-bold text-lg text-white">MyCommunity</h3>
+            <p class="text-sm text-white">Making neighborhoods better, together.</p>
+          </div>
         </div>
+        <div class="text-sm text-white">©️ 2025 MyCommunity. All rights reserved.</div>
       </div>
     </div>
-    <!-- Repeat 9+ cards -->
-  </div>
-</section>
+  </footer>
+
+  <script>
+    // THIS IS THE ONLY PLACE REPORTS ARE CREATED — EXACTLY 5
+    const ONLY_FIVE_REPORTS = [
+      {
+        id: "r1",
+        title: "Huge pothole on Oxford Street",
+        desc: "This pothole has damaged many cars and is dangerous at night.",
+        image: "images/reports/report1.avif",
+        time: "2 days ago",
+        upvotes: 45,
+        status: "urgent",
+        userId: "kwame@gmail.com",
+        userName: "Kwame Mensah"
+      },
+      {
+        id: "r2",
+        title: "Broken streetlight at Labadi Beach Road",
+        desc: "Area is completely dark after 7pm. Very unsafe for residents.",
+        image: "images/reports/report2.jpg",
+        time: "5 hours ago",
+        upvotes: 31,
+        status: "urgent",
+        userId: "ama@gmail.com",
+        userName: "Ama Asante"
+      },
+      {
+        id: "r3",
+        title: "Overflowing trash bin near Madina Market",
+        desc: "Garbage spilling everywhere. Smells bad and attracting rats.",
+        image: "images/reports/report3.jpg",
+        time: "1 day ago",
+        upvotes: 22,
+        status: "warning",
+        userId: "kofi@gmail.com",
+        userName: "Kofi Boateng"
+      },
+      {
+        id: "r4",
+        title: "Damaged sidewalk in East Legon",
+        desc: "Cracked and raised slabs. Elderly people and kids keep tripping.",
+        image: "images/reports/report4.jpg",
+        time: "3 days ago",
+        upvotes: 18,
+        status: "warning",
+        userId: "kwame@gmail.com",
+        userName: "Kwame Mensah"
+      },
+      {
+        id: "r5",
+        title: "Graffiti on community center wall",
+        desc: "New gang tags appeared overnight. Please clean it up.",
+        image: "images/reports/trash.jpeg",
+        time: "Just now",
+        upvotes: 9,
+        status: "warning",
+        userId: "ama@gmail.com",
+        userName: "Ama Asante"
+      }
+    ];
+
+    // FORCE ONLY THESE 5 REPORTS — DELETE ANYTHING ELSE!
+    if (!localStorage.getItem("allReports") || JSON.parse(localStorage.getItem("allReports")).length !== 5) {
+      localStorage.setItem("allReports", JSON.stringify(ONLY_FIVE_REPORTS));
+    }
+
+    // Default user so you can delete your own reports
+    if (!localStorage.getItem("user")) {
+      localStorage.setItem("user", JSON.stringify({
+        name: "Demo User",
+        email: "kwame@gmail.com",
+        avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=kwame"
+      }));
+    }
+
+    // Load data
+    const currentUser = JSON.parse(localStorage.getItem("user"));
+    let allReports = JSON.parse(localStorage.getItem("allReports"));
+
+    // Navbar
+    function updateNavbar() {
+      const section = document.getElementById("auth-section");
+      if (currentUser) {
+        section.innerHTML = `
+          <div class="flex items-center gap-3">
+            <img src="${currentUser.avatar}" class="w-10 h-10 rounded-full ring ring-primary ring-offset-2" />
+            <span class="hidden md:block">${currentUser.name.split(" ")[0]}</span>
+            <button onclick="logout()" class="btn btn-ghost btn-sm">Logout</button>
+          </div>`;
+      }
+    }
+
+    function logout() {
+      if (confirm("Logout?")) {
+        localStorage.removeItem("user");
+        location.reload();
+      }
+    }
+
+    // Upvote & Delete
+    function upvote(id) {
+      allReports = allReports.map(r => r.id === id ? { ...r, upvotes: r.upvotes + 1 } : r);
+      localStorage.setItem("allReports", JSON.stringify(allReports));
+      renderReports();
+    }
+
+    function deleteReport(id) {
+      if (confirm("Delete this report?")) {
+        allReports = allReports.filter(r => r.id !== id);
+        localStorage.setItem("allReports", JSON.stringify(allReports));
+        renderReports();
+      }
+    }
+
+    // Render ONLY the 5 reports (or less if deleted)
+    function renderReports() {
+      const container = document.getElementById("reports-container");
+      if (allReports.length === 0) {
+        document.getElementById("no-reports").classList.remove("hidden");
+        container.innerHTML = "";
+        return;
+      }
+      document.getElementById("no-reports").classList.add("hidden");
+
+      container.innerHTML = allReports.map(r => `
+        <div class="card bg-base-100 shadow-xl hover:shadow-2xl transition">
+          ${r.image ? `<figure><img src="${r.image}" alt="Report" class="report-image w-full rounded-t-xl"/></figure>` : ''}
+          <div class="card-body">
+            <div class="flex justify-between items-start">
+              <h3 class="card-title text-lg">${r.title}</h3>
+              <div class="badge ${r.status === 'urgent' ? 'badge-error' : 'badge-warning'}">
+                ${r.status === 'urgent' ? 'Urgent' : 'In Progress'}
+              </div>
+            </div>
+            <p class="text-sm opacity-80 mt-2">${r.desc}</p>
+            <div class="flex justify-between items-center mt-4">
+              <button onclick="upvote('${r.id}')" class="btn btn-xs btn-outline btn-primary">
+                Upvote ${r.upvotes}
+              </button>
+              <span class="text-sm opacity-70">${r.time}</span>
+              ${currentUser && r.userId === currentUser.email ? 
+                `<button onclick="deleteReport('${r.id}')" class="btn btn-xs btn-error">Delete</button>` : ''}
+            </div>
+          </div>
+        </div>
+      `).join("");
+    }
+
+    // Run everything
+    updateNavbar();
+    renderReports();
+  </script>
+</body>
+</html>

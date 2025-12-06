@@ -10,257 +10,283 @@
   <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
   <style>
     body { font-family: 'Inter', sans-serif; }
+    .report-image { height: 200px; object-fit: cover; }
   </style>
 </head>
-<body class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white">
-
-  <!-- Dark Mode Toggle -->
-  <div class="fixed top-4 right-4 z-50">
-    <label class="swap swap-rotate btn btn-circle btn-ghost">
-      <input type="checkbox" class="theme-controller" id="theme-toggle" />
-      <svg class="swap-on fill-current w-7 h-7" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-        <path d="M12 6.5A5.5 5.5 0 1 0 17.5 12 5.51 5.51 0 0 0 12 6.5Zm0 9A3.5 3.5 0 1 1 15.5 12 3.5 3.5 0 0 1 12 15.5Z"/>
-      </svg>
-      <svg class="swap-off fill-current w-7 h-7" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-        <path d="M21.64 13a1 1 0 0 0-1.05-.14 8.05 8.05 0 0 1-3.37.73A8.15 8.15 0 0 1 9.08 5.49a8.59 8.59 0 0 1 .25-2 1 1 0 0 0-1.33-1.13A10.14 10.14 0 1 0 22 14.05 1 1 0 0 0 21.64 13Z"/>
-      </svg>
-    </label>
-  </div>
+<body class="bg-gray-50">
 
   <!-- Navbar -->
   <div class="navbar bg-base-100/80 backdrop-blur-lg sticky top-0 z-50 shadow-sm">
     <div class="navbar-start">
-      <a href="/" class="flex items-center gap-3 px-4">
-        <img src="https://api.dicebear.com/7.x/shapes/svg?seed=MyCommunity" class="w-10 h-10 rounded-full" alt="logo"/>
+      <a href="index.html" class="flex items-center gap-3 px-4">
+        <img src="images/logo.png" class="w-10 h-10 rounded-lg" alt="logo"/>
         <div class="font-bold text-xl text-sky-600">MyCommunity</div>
       </a>
     </div>
     <div class="navbar-center hidden lg:flex">
       <ul class="menu menu-horizontal px-1 font-medium">
-        <li><a href="/">Home</a></li>
+        <li><a href="index.html">Home</a></li>
         <li><a href="dashboard.html" class="text-sky-600 font-bold">Dashboard</a></li>
         <li><a href="reports.html">All Reports</a></li>
         <li><a href="map.html">Live Map</a></li>
       </ul>
     </div>
-    <div class="navbar-end">
-      <button onclick="document.getElementById('report_modal').showModal()" class="btn btn-primary">New Report</button>
+    <div class="navbar-end flex items-center gap-4 px-4">
+      <div class="flex items-center gap-3" id="user-info"></div>
+      <button onclick="document.getElementById('report_modal').showModal()" class="btn btn-primary btn-sm">
+        New Report
+      </button>
     </div>
   </div>
 
-  <!-- Dashboard Hero -->
+  <!-- Hero -->
   <section class="py-24 bg-gradient-to-br from-sky-600 to-blue-800 text-white">
     <div class="max-w-7xl mx-auto px-6 text-center">
-      <h1 class="text-5xl md:text-6xl font-extrabold" data-aos="fade-up">Your Community Dashboard</h1>
-      <p class="text-xl mt-4 opacity-90" data-aos="fade-up" data-aos-delay="100">Track progress, see impact, stay updated</p>
+      <h1 class="text-5xl md:text-6xl font-extrabold" data-aos="fade-up">
+        Welcome back, <span id="user-name-display">User</span>!
+      </h1>
     </div>
   </section>
 
-  <!-- Stats -->
-  <section class="max-w-7xl mx-auto px-6 -mt-12">
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
-      <div class="stats shadow bg-white dark:bg-gray-800" data-aos="fade-up">
-        <div class="stat">
-          <div class="stat-title">Total Reports</div>
-          <div class="stat-value text-sky-600">1,427</div>
-          <div class="stat-desc">↗︎ 23% this month</div>
-        </div>
+  <!-- Stats Section -->
+  <section class="max-w-7xl mx-auto px-6 py-12">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6" data-aos="fade-up">
+      <div class="stat bg-base-100 rounded-xl shadow-xl">
+        <div class="stat-title">Total Reports</div>
+        <div class="stat-value text-primary" id="total-reports">0</div>
+        <div class="stat-desc">All community issues</div>
       </div>
-      <div class="stats shadow bg-white dark:bg-gray-800" data-aos="fade-up" data-aos-delay="100">
-        <div class="stat">
-          <div class="stat-title">In Progress</div>
-          <div class="stat-value text-orange-500">312</div>
-        </div>
+      <div class="stat bg-base-100 rounded-xl shadow-xl">
+        <div class="stat-title">Your Reports</div>
+        <div class="stat-value text-secondary" id="user-reports-count">0</div>
+        <div class="stat-desc">Issues you've reported</div>
       </div>
-      <div class="stats shadow bg-white dark:bg-gray-800" data-aos="fade-up" data-aos-delay="200">
-        <div class="stat">
-          <div class="stat-title">Resolved</div>
-          <div class="stat-value text-green-500">1,089</div>
-          <div class="stat-desc">89.2% success</div>
-        </div>
+      <div class="stat bg-base-100 rounded-xl shadow-xl">
+        <div class="stat-title">Urgent Issues</div>
+        <div class="stat-value text-error" id="urgent-count">0</div>
+        <div class="stat-desc">Need immediate attention</div>
       </div>
-      <div class="stats shadow bg-white dark:bg-gray-800" data-aos="fade-up" data-aos-delay="300">
-        <div class="stat">
-          <div class="stat-title">Your Reports</div>
-          <div class="stat-value text-purple-600">27</div>
-          <div class="stat-desc">Top 5% contributor</div>
-        </div>
+      <div class="stat bg-base-100 rounded-xl shadow-xl">
+        <div class="stat-title">Total Upvotes</div>
+        <div class="stat-value text-accent" id="total-upvotes">0</div>
+        <div class="stat-desc">Community support</div>
       </div>
     </div>
   </section>
 
-  <!-- Your Reports + Activity -->
+  <!-- Your Reports -->
   <section class="max-w-7xl mx-auto px-6 py-20">
-    <div class="grid lg:grid-cols-3 gap-10">
-      <div class="lg:col-span-2">
-        <h2 class="text-3xl font-bold mb-8" data-aos="fade-up">Your Recent Reports</h2>
-        <div class="space-y-6">
-          <!-- Report 1 -->
-          <div class="card bg-base-100 shadow-xl" data-aos="fade-up">
-            <div class="card-body">
-              <div class="flex justify-between items-start">
-                <div>
-                  <h3 class="card-title">Pothole on Airport Road</h3>
-                  <p class="text-sm opacity-70">Reported 3 days ago • 89 upvotes</p>
-                </div>
-                <div class="badge badge-warning">In Progress</div>
-              </div>
-              <progress class="progress progress-warning w-full mt-4" value="65" max="100"></progress>
-              <p class="text-xs opacity-60 mt-2">65% complete - Road crew scheduled for next week</p>
-            </div>
-          </div>
-
-          <!-- Report 2 -->
-          <div class="card bg-base-100 shadow-xl" data-aos="fade-up" data-aos-delay="100">
-            <div class="card-body">
-              <div class="flex justify-between items-start">
-                <div>
-                  <h3 class="card-title">Broken Street Light - Tema Road</h3>
-                  <p class="text-sm opacity-70">Reported 1 week ago • 156 upvotes</p>
-                </div>
-                <div class="badge badge-success">Resolved</div>
-              </div>
-              <progress class="progress progress-success w-full mt-4" value="100" max="100"></progress>
-              <p class="text-xs opacity-60 mt-2">100% complete - Fixed on Dec 2, 2025</p>
-            </div>
-          </div>
-
-          <!-- Report 3 -->
-          <div class="card bg-base-100 shadow-xl" data-aos="fade-up" data-aos-delay="200">
-            <div class="card-body">
-              <div class="flex justify-between items-start">
-                <div>
-                  <h3 class="card-title">Illegal Dumping Site - Market Area</h3>
-                  <p class="text-sm opacity-70">Reported 5 hours ago • 42 upvotes</p>
-                </div>
-                <div class="badge badge-error">Urgent</div>
-              </div>
-              <progress class="progress progress-error w-full mt-4" value="10" max="100"></progress>
-              <p class="text-xs opacity-60 mt-2">10% complete - Under review by authorities</p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Leaderboard -->
-      <div>
-        <h2 class="text-3xl font-bold mb-8" data-aos="fade-up">Top Contributors</h2>
-        <div class="space-y-4">
-          <div class="flex items-center gap-4 bg-base-200 p-4 rounded-xl hover:shadow-lg transition" data-aos="fade-up">
-            <div class="w-12 h-12 rounded-full bg-gradient-to-br from-yellow-400 to-orange-500 flex items-center justify-center text-white font-bold text-xl">1</div>
-            <div class="flex-1">
-              <p class="font-bold">Kwame Asare</p>
-              <p class="text-sm opacity-70">142 reports • Gold Badge</p>
-            </div>
-            <div class="text-2xl">🏆</div>
-          </div>
-
-          <div class="flex items-center gap-4 bg-base-200 p-4 rounded-xl hover:shadow-lg transition" data-aos="fade-up" data-aos-delay="100">
-            <div class="w-12 h-12 rounded-full bg-gradient-to-br from-gray-300 to-gray-400 flex items-center justify-center text-white font-bold text-xl">2</div>
-            <div class="flex-1">
-              <p class="font-bold">Ama Mensah</p>
-              <p class="text-sm opacity-70">98 reports • Silver Badge</p>
-            </div>
-            <div class="text-2xl">🥈</div>
-          </div>
-
-          <div class="flex items-center gap-4 bg-base-200 p-4 rounded-xl hover:shadow-lg transition" data-aos="fade-up" data-aos-delay="200">
-            <div class="w-12 h-12 rounded-full bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center text-white font-bold text-xl">3</div>
-            <div class="flex-1">
-              <p class="font-bold">Kofi Boateng</p>
-              <p class="text-sm opacity-70">76 reports • Bronze Badge</p>
-            </div>
-            <div class="text-2xl">🥉</div>
-          </div>
-
-          <div class="flex items-center gap-4 bg-base-200 p-4 rounded-xl hover:shadow-lg transition" data-aos="fade-up" data-aos-delay="300">
-            <div class="w-12 h-12 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white font-bold text-xl">4</div>
-            <div class="flex-1">
-              <p class="font-bold">Abena Owusu</p>
-              <p class="text-sm opacity-70">54 reports</p>
-            </div>
-          </div>
-
-          <div class="flex items-center gap-4 bg-base-200 p-4 rounded-xl hover:shadow-lg transition" data-aos="fade-up" data-aos-delay="400">
-            <div class="w-12 h-12 rounded-full bg-gradient-to-br from-purple-400 to-purple-600 flex items-center justify-center text-white font-bold text-xl">5</div>
-            <div class="flex-1">
-              <p class="font-bold">Yaw Mensah</p>
-              <p class="text-sm opacity-70">48 reports</p>
-            </div>
-          </div>
-
-          <!-- Your position -->
-          <div class="flex items-center gap-4 bg-primary/10 p-4 rounded-xl border-2 border-primary" data-aos="fade-up" data-aos-delay="500">
-            <div class="w-12 h-12 rounded-full bg-primary flex items-center justify-center text-white font-bold text-xl">12</div>
-            <div class="flex-1">
-              <p class="font-bold text-primary">You</p>
-              <p class="text-sm opacity-70">27 reports</p>
-            </div>
-            <div class="text-2xl">⭐</div>
-          </div>
-        </div>
-
-        <div class="mt-8 p-6 bg-gradient-to-br from-sky-100 to-blue-100 dark:from-sky-900 dark:to-blue-900 rounded-xl" data-aos="fade-up" data-aos-delay="600">
-          <h3 class="font-bold text-lg mb-2">🎯 Your Next Goal</h3>
-          <p class="text-sm opacity-80 mb-4">3 more reports to reach Bronze Badge!</p>
-          <progress class="progress progress-primary w-full" value="27" max="30"></progress>
-        </div>
-      </div>
-    </div>
+    <h2 class="text-3xl font-bold mb-8" data-aos="fade-up">Your Recent Reports</h2>
+    <div class="space-y-6" id="user-reports-container"></div>
   </section>
 
   <!-- Report Modal -->
   <dialog id="report_modal" class="modal">
-    <div class="modal-box">
+    <div class="modal-box max-w-2xl">
       <h3 class="font-bold text-2xl mb-6">Report an Issue</h3>
-      <form class="space-y-5" onsubmit="handleReportSubmit(event)">
-        <input type="text" placeholder="Issue Title (e.g. Pothole on 5th Ave)" class="input input-bordered w-full" required />
-        <textarea class="textarea textarea-bordered w-full h-32" placeholder="Describe the problem in detail..." required></textarea>
-        <div class="flex gap-3">
+
+      <div class="mb-6">
+        <label class="btn btn-outline btn-primary w-full">
+          Upload Photo
+          <input type="file" id="reportImage" accept="image/*" capture="environment" class="hidden" onchange="previewImage(event)" />
+        </label>
+        <img id="imagePreview" src="" alt="Preview" class="hidden w-full max-h-64 object-cover rounded-lg mt-4" />
+      </div>
+
+      <div class="form-control mb-6">
+        <label class="label cursor-pointer justify-start gap-4">
+          <input type="checkbox" id="isUrgent" class="checkbox checkbox-error" />
+          <span class="label-text text-lg font-medium">This is an URGENT issue</span>
+        </label>
+      </div>
+
+      <form id="reportForm">
+        <input type="text" id="reportTitle" placeholder="Issue Title" class="input input-bordered w-full mb-4" required />
+        <textarea id="reportDesc" class="textarea textarea-bordered w-full h-32" placeholder="Describe the issue..." required></textarea>
+        <div class="flex gap-3 mt-6">
           <button type="submit" class="btn btn-primary flex-1">Submit Report</button>
-          <button type="button" onclick="document.getElementById('report_modal').close()" class="btn btn-ghost">Cancel</button>
+          <button type="button" onclick="closeModal()" class="btn btn-ghost">Cancel</button>
         </div>
       </form>
       <form method="dialog">
-        <button class="btn btn-ghost btn-circle absolute top-4 right-4">✕</button>
+        <button class="btn btn-circle btn-ghost absolute top-4 right-4">X</button>
       </form>
     </div>
   </dialog>
 
+  <!-- Footer -->
+  <footer class="mt-12 w-full bg-blue-600 border-t border-base-200">
+    <div class="max-w-7xl mx-auto px-4 py-8">
+      <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+        <div class="flex items-center gap-3">
+          <img src="images/logo.png" alt="MyCommunity Logo" class="w-10 h-10 rounded-lg">
+          <div>
+            <h3 class="font-bold text-lg text-white">MyCommunity</h3>
+            <p class="text-sm text-white">Making neighborhoods better, together.</p>
+          </div>
+        </div>
+        <div class="text-sm text-white">©️ 2025 MyCommunity. All rights reserved.</div>
+      </div>
+    </div>
+  </footer>
+
   <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
   <script>
-    // Initialize AOS
     AOS.init({ duration: 800, once: true });
 
-    // Dark Mode Toggle
-    const toggle = document.getElementById("theme-toggle");
-    const html = document.documentElement;
-    const savedTheme = localStorage.getItem("theme");
-    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-
-    if (savedTheme) {
-      html.setAttribute("data-theme", savedTheme);
-      if (toggle) toggle.checked = savedTheme === "dark";
-    } else if (prefersDark) {
-      html.setAttribute("data-theme", "dark");
-      if (toggle) toggle.checked = true;
+    // === 5 REAL DUMMY REPORTS (only added once) ===
+    if (!localStorage.getItem("allReports") || JSON.parse(localStorage.getItem("allReports")).length === 0) {
+      const dummyReports = [
+        {
+          id: "r1", title: "Massive pothole cluster on Ring Road Central",
+          desc: "Several deep potholes causing traffic jams and tire damage daily.",
+          image: "images/reports/report1.jpg", lat: 5.5701, lng: -0.2194,
+          time: "4 hours ago", upvotes: 68, status: "urgent",
+          userId: "ama@example.com", userName: "Ama Serwaa"
+        },
+        {
+          id: "r2", title: "No streetlights on Labadi Beach Road",
+          desc: "Complete darkness after 7pm. High robbery risk reported.",
+          image: "images/reports/report2.jpg", lat: 5.5750, lng: -0.1600,
+          time: "1 day ago", upvotes: 51, status: "urgent",
+          userId: "ama@example.com", userName: "Ama Serwaa"
+        },
+        {
+          id: "r3", title: "Blocked drainage causing flooding in Osu",
+          desc: "Every rain turns Ako Adjei into a river. Urgent cleaning needed!",
+          image: "images/reports/report3.jpg", lat: 5.5610, lng: -0.1780,
+          time: "2 days ago", upvotes: 39, status: "urgent",
+          userId: "kwame@example.com", userName: "Kwame Mensah"
+        },
+        {
+          id: "r4", title: "Abandoned car blocking pavement in East Legon",
+          desc: "Old Toyota has been there for 3 months. Kids can't walk safely.",
+          image: "images/reports/report4.jpg", lat: 5.6350, lng: -0.1480,
+          time: "5 hours ago", upvotes: 24, status: "warning",
+          userId: "ama@example.com", userName: "Ama Serwaa"
+        },
+        {
+          id: "r5", title: "Overflowing garbage bins at Madina Market",
+          desc: "Bins not emptied in over a week. Terrible smell and rats everywhere.",
+          image: "images/reports/report5.jpg", lat: 5.6790, lng: -0.1670,
+          time: "Just now", upvotes: 12, status: "warning",
+          userId: "kofi@example.com", userName: "Kofi Boateng"
+        }
+      ];
+      localStorage.setItem("allReports", JSON.stringify(dummyReports));
     }
 
-    if (toggle) {
-      toggle.addEventListener("change", () => {
-        const newTheme = toggle.checked ? "dark" : "light";
-        html.setAttribute("data-theme", newTheme);
-        localStorage.setItem("theme", newTheme);
-      });
+    // Default logged-in user (so you see reports in dashboard)
+    if (!localStorage.getItem("user")) {
+      localStorage.setItem("user", JSON.stringify({
+        name: "Ama Serwaa",
+        email: "ama@example.com",
+        avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=ama"
+      }));
     }
 
-    // Handle report form submission
-    function handleReportSubmit(event) {
-      event.preventDefault();
-      alert('Report submitted successfully!');
-      document.getElementById('report_modal').close();
-      event.target.reset();
+    const user = JSON.parse(localStorage.getItem("user"));
+
+    // Update UI with user info
+    document.getElementById("user-name-display").textContent = user.name.split(" ")[0];
+    document.getElementById("user-info").innerHTML = `
+      <img src="${user.avatar}" class="w-10 h-10 rounded-full ring ring-primary ring-offset-2" />
+      <span class="hidden md:block">${user.name.split(" ")[0]}</span>
+      <button onclick="logout()" class="btn btn-ghost btn-sm">Logout</button>
+    `;
+
+    function logout() {
+      if (confirm("Logout?")) {
+        localStorage.removeItem("user");
+        window.location.href = "index.html";
+      }
     }
+
+    function previewImage(e) {
+      const file = e.target.files[0];
+      if (file) {
+        document.getElementById("imagePreview").src = URL.createObjectURL(file);
+        document.getElementById("imagePreview").classList.remove("hidden");
+      }
+    }
+
+    function closeModal() {
+      document.getElementById("report_modal").close();
+      document.getElementById("reportForm").reset();
+      document.getElementById("imagePreview").classList.add("hidden");
+      document.getElementById("isUrgent").checked = false;
+    }
+
+    document.getElementById("reportForm").addEventListener("submit", function(e) {
+      e.preventDefault();
+
+      const title = document.getElementById("reportTitle").value;
+      const desc = document.getElementById("reportDesc").value;
+      const isUrgent = document.getElementById("isUrgent").checked;
+      const imageFile = document.getElementById("reportImage").files[0];
+      const imageUrl = imageFile ? URL.createObjectURL(imageFile) : null;
+
+      const newReport = {
+        id: Date.now().toString(),
+        title, desc, image: imageUrl,
+        time: "Just now", upvotes: 0,
+        status: isUrgent ? "urgent" : "warning",
+        userId: user.email, userName: user.name
+      };
+
+      let allReports = JSON.parse(localStorage.getItem("allReports") || "[]");
+      allReports.unshift(newReport);
+      localStorage.setItem("allReports", JSON.stringify(allReports));
+
+      alert(isUrgent ? "URGENT report submitted!" : "Report submitted!");
+      closeModal();
+      renderUserReports();
+      updateStats();
+    });
+
+    function updateStats() {
+      const allReports = JSON.parse(localStorage.getItem("allReports") || "[]");
+      const userReports = allReports.filter(r => r.userId === user.email);
+      const urgentReports = allReports.filter(r => r.status === "urgent");
+      const totalUpvotes = allReports.reduce((sum, r) => sum + (r.upvotes || 0), 0);
+
+      document.getElementById("total-reports").textContent = allReports.length;
+      document.getElementById("user-reports-count").textContent = userReports.length;
+      document.getElementById("urgent-count").textContent = urgentReports.length;
+      document.getElementById("total-upvotes").textContent = totalUpvotes;
+    }
+
+    function renderUserReports() {
+      const allReports = JSON.parse(localStorage.getItem("allReports") || "[]");
+      const userReports = allReports.filter(r => r.userId === user.email);
+      const container = document.getElementById("user-reports-container");
+
+      if (userReports.length === 0) {
+        container.innerHTML = `<p class="text-center opacity-70">No reports yet. Create your first one!</p>`;
+        return;
+      }
+
+      container.innerHTML = userReports.slice(0, 10).map((r, i) => `
+        <div class="card bg-base-100 shadow-xl" data-aos="fade-up" data-aos-delay="${i*100}">
+          ${r.image ? `<figure><img src="${r.image}" alt="Report" class="report-image w-full rounded-t-xl"/></figure>` : ''}
+          <div class="card-body">
+            <div class="flex justify-between items-start">
+              <div>
+                <h3 class="card-title">${r.title}</h3>
+                <p class="text-sm opacity-70">${r.time} • ${r.upvotes || 0} upvotes</p>
+              </div>
+              <div class="badge ${r.status === 'urgent' ? 'badge-error' : 'badge-warning'}">
+                ${r.status === 'urgent' ? 'Urgent' : 'In Progress'}
+              </div>
+            </div>
+          </div>
+        </div>
+      `).join("");
+    }
+
+    // Initial render
+    renderUserReports();
+    updateStats();
   </script>
 </body>
 </html>

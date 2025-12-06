@@ -4,74 +4,32 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>MyCommunity – Fix Your Neighborhood Together</title>
-
-  <!-- Tailwind + DaisyUI -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" type="text/css" />
-
-  <!-- Fonts -->
+  <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-
-  <!-- AOS Animation -->
-  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
-
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <style>
     body { font-family: 'Inter', sans-serif; }
-    html { transition: background-color 0.3s ease, color 0.3s ease; }
-
     .hero-bg {
-      background: linear-gradient(135deg, #0ea5e9 0%, #1e40af 100%),
-                  url('https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?q=80&w=2400') center/cover no-repeat;
+      background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)),
+                  url('images/hero1.jpg') center/cover no-repeat;
+      animation: changeBg 18s infinite;
     }
-
-    /* Fixed map container - PROPER SIZING */
-    #homeMap {
-      height: 400px;
-      width: 100%;
-      max-width: 900px;
-      margin: 0 auto;
-      border-radius: 1rem;
-      overflow: hidden;
-      position: relative;
+    @keyframes changeBg {
+      0%, 30%   { background-image: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('images/hero1.jpg'); }
+      33%, 63%  { background-image: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('images/hero2.jpeg'); }
+      66%, 100% { background-image: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('images/hero3.jpeg'); }
     }
-
-    .report-card:hover { 
-      transform: translateY(-10px); 
-      transition: all 0.3s ease; 
-    }
-
-    /* Ensure smooth scrolling */
-    html {
-      scroll-behavior: smooth;
-      overflow-x: hidden;
-    }
-
-    body {
-      overflow-x: hidden;
-    }
+    #homeMap { height: 400px; width: 100%; max-width: 900px; margin: 0 auto; border-radius: 1rem; overflow: hidden; z-index: 10; }
+    .report-image { height: 200px; object-fit: cover; }
   </style>
 </head>
-
 <body class="min-h-screen bg-base-100 text-base-content">
-
-  <!-- Dark Mode Toggle (Top Right) -->
-  <div class="fixed top-4 right-4 z-50">
-    <label class="swap swap-rotate btn btn-circle btn-ghost">
-      <input type="checkbox" class="theme-controller" id="theme-toggle" />
-      <!-- Sun Icon (Light Mode) -->
-      <svg class="swap-on fill-current w-7 h-7" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-        <path d="M5.64,17l-.71.71a1,1,0,0,0,0,1.41,1,1,0,0,0,1.41,0l.71-.71A1,1,0,0,0,5.64,17ZM5,12a1,1,0,0,0-1-1H3a1,1,0,0,0,0,2H4A1,1,0,0,0,5,12Zm7-7a1,1,0,0,0,1-1V3a1,1,0,0,0-2,0V4A1,1,0,0,0,12,5ZM5.64,7.05a1,1,0,0,0,.7.29,1,1,0,0,0,.71-.29,1,1,0,0,0,0-1.41l-.71-.71A1,1,0,0,0,4.93,6.34Zm12,.29a1,1,0,0,0,.7-.29l.71-.71a1,1,0,1,0-1.41-1.41L17,5.64a1,1,0,0,0,0,1.41A1,1,0,0,0,17.66,7.34ZM21,11H20a1,1,0,0,0,0,2h1a1,1,0,0,0,0-2Zm-9,8a1,1,0,0,0-1,1v1a1,1,0,0,0,2,0V20A1,1,0,0,0,12,19ZM18.36,17A1,1,0,0,0,17,18.36l.71.71a1,1,0,0,0,1.41,0,1,1,0,0,0,0-1.41ZM12,6.5A5.5,5.5,0,1,0,17.5,12,5.51,5.51,0,0,0,12,6.5Zm0,9A3.5,3.5,0,1,1,15.5,12,3.5,3.5,0,0,1,12,15.5Z"/>
-      </svg>
-      <!-- Moon Icon (Dark Mode) -->
-      <svg class="swap-off fill-current w-7 h-7" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-        <path d="M21.64,13a1,1,0,0,0-1.05-.14,8.05,8.05,0,0,1-3.37.73A8.15,8.15,0,0,1,9.08,5.49a8.59,8.59,0,0,1,.25-2A1,1,0,0,0,8,2.36,10.14,10.14,0,1,0,22,14.05,1,1,0,0,0,21.64,13Zm-9.5,6.69A8.14,8.14,0,0,1,7.08,5.22v.27A10.15,10.15,0,0,0,17.22,15.63a9.79,9.79,0,0,0,2.1-.22A8.11,8.11,0,0,1,12.14,19.73Z"/>
-      </svg>
-    </label>
-  </div>
 
   <!-- Floating Report Button -->
   <button onclick="document.getElementById('report_modal').showModal()" 
-    class="fixed bottom-6 right-6 z-50 btn btn-circle btn-lg shadow-2xl btn-primary text-white text-3xl">
+          class="fixed bottom-6 right-6 z-50 btn btn-circle btn-lg shadow-2xl btn-primary text-white text-3xl">
     +
   </button>
 
@@ -79,7 +37,7 @@
   <div class="navbar bg-base-100/95 backdrop-blur sticky top-0 z-40 shadow-lg">
     <div class="navbar-start">
       <a href="/" class="flex items-center gap-3 px-4">
-        <img src="https://api.dicebear.com/7.x/shapes/svg?seed=MyCommunity" class="w-10 h-10 rounded-full" alt="logo"/>
+        <img src="images/logo.png" class="w-10 h-10 rounded-lg" alt="logo"/>
         <span class="font-bold text-xl text-primary">MyCommunity</span>
       </a>
     </div>
@@ -89,27 +47,16 @@
         <li><a href="#map">Map</a></li>
         <li><a href="#reports">Reports</a></li>
         <li><a href="dashboard.html">Dashboard</a></li>
+        <li><a href="map.html">Live Map</a></li>
       </ul>
     </div>
-    <div class="navbar-end">
-      <div class="dropdown dropdown-end lg:hidden">
-        <label tabindex="0" class="btn btn-ghost btn-circle">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
-        </label>
-        <ul tabindex="0" class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52 mt-3">
-          <li><a href="#home">Home</a></li>
-          <li><a href="#map">Map</a></li>
-          <li><a href="#reports">Reports</a></li>
-          <li><a href="dashboard.html">Dashboard</a></li>
-        </ul>
-      </div>
-    </div>
+    <div class="navbar-end px-4" id="auth-section"></div>
   </div>
 
   <!-- Hero Section -->
   <section id="home" class="hero min-h-screen hero-bg relative">
     <div class="hero-overlay bg-black/60"></div>
-    <div class="hero-content text-center py-32 relative z-10" data-aos="fade-up">
+    <div class="hero-content text-center py-32 relative z-10">
       <div class="max-w-4xl text-white">
         <h1 class="text-5xl md:text-7xl font-extrabold leading-tight">
           Your Neighborhood.<br><span class="text-sky-300">Fixed Faster.</span>
@@ -117,9 +64,7 @@
         <p class="text-xl mt-6 opacity-90">Report issues. Track fixes. See real change.</p>
         <div class="mt-10 flex flex-col sm:flex-row gap-5 justify-center">
           <button onclick="document.getElementById('report_modal').showModal()" 
-            class="btn btn-lg bg-white text-primary hover:bg-gray-100 font-bold">
-            Report Now
-          </button>
+                  class="btn btn-lg bg-white text-primary font-bold">Report Now</button>
           <a href="#map" class="btn btn-lg btn-outline text-white border-white hover:bg-white hover:text-primary">
             View Live Map
           </a>
@@ -128,20 +73,13 @@
     </div>
   </section>
 
-  <!-- Live Map Section -->
+  <!-- Map Section -->
   <section id="map" class="py-20 bg-base-200">
     <div class="max-w-7xl mx-auto px-6">
-      <h2 class="text-4xl font-bold text-center mb-12" data-aos="fade-up">
-        Live Issues Near You
-      </h2>
-
-      <!-- Map Container with proper constraints -->
-      <div class="mx-auto max-w-4xl" data-aos="fade-up" data-aos-delay="100">
-        <div id="homeMap" class="shadow-2xl"></div>
-      </div>
-
+      <h2 class="text-4xl font-bold text-center mb-12">Live Issues Near You</h2>
+      <div class="mx-auto max-w-4xl"><div id="homeMap"></div></div>
       <div class="text-center mt-10">
-        <a href="map.html" class="btn btn-primary btn-lg">Open Full Map →</a>
+        <a href="map.html" class="btn btn-primary btn-lg">Open Full Map</a>
       </div>
     </div>
   </section>
@@ -149,289 +87,274 @@
   <!-- Recent Reports -->
   <section id="reports" class="py-24 bg-base-100">
     <div class="max-w-7xl mx-auto px-6">
-      <h2 class="text-4xl md:text-5xl font-bold text-center mb-16" data-aos="fade-up">Recent Reports</h2>
-      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-        <!-- Report Card 1 -->
-        <div class="report-card card bg-base-200 shadow-xl" data-aos="fade-up" data-aos-delay="100">
-          <figure><img src="https://images.unsplash.com/photo-1593113598332-cd5a0f45ec9e?q=80&w=800" alt="Pothole" class="h-48 object-cover rounded-t-2xl"/></figure>
-          <div class="card-body">
-            <h3 class="card-title">Massive Pothole on Main St</h3>
-            <p>Causing accidents daily. Near the school zone!</p>
-            <div class="card-actions justify-between items-center mt-6">
-              <div class="badge badge-warning">In Progress</div>
-              <div class="text-sm opacity-70">2 days ago • 124 upvotes</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Report Card 2 -->
-        <div class="report-card card bg-base-200 shadow-xl" data-aos="fade-up" data-aos-delay="200">
-          <figure><img src="https://images.unsplash.com/photo-1581092580497-e0e2b3b4a76a?q=80&w=800" alt="Trash" class="h-48 object-cover rounded-t-2xl"/></figure>
-          <div class="card-body">
-            <h3 class="card-title">Illegal Dumping Site</h3>
-            <p>Garbage pile growing behind the market.</p>
-            <div class="card-actions justify-between items-center mt-6">
-              <div class="badge badge-error">Urgent</div>
-              <div class="text-sm opacity-70">5 hours ago • 89 upvotes</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Report Card 3 -->
-        <div class="report-card card bg-base-200 shadow-xl" data-aos="fade-up" data-aos-delay="300">
-          <figure><img src="https://images.unsplash.com/photo-1517336714731-489689fd1ca8?q=80&w=800" alt="Light" class="h-48 object-cover rounded-t-2xl"/></figure>
-          <div class="card-body">
-            <h3 class="card-title">Broken Street Lights</h3>
-            <p>Whole block dark at night. Safety risk.</p>
-            <div class="card-actions justify-between items-center mt-6">
-              <div class="badge badge-info">Reported</div>
-              <div class="text-sm opacity-70">1 day ago • 67 upvotes</div>
-            </div>
-          </div>
-        </div>
-      </div>
-
+      <h2 class="text-4xl md:text-5xl font-bold text-center mb-16">Recent Community Reports</h2>
+      <div id="recent-reports-container" class="grid md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
       <div class="text-center mt-16">
-        <a href="reports.html" class="btn btn-primary btn-lg">View All Reports →</a>
+        <a href="reports.html" class="btn btn-primary btn-lg">View All Reports</a>
       </div>
     </div>
   </section>
 
   <!-- Footer -->
-  <footer class="footer p-12 bg-neutral text-neutral-content">
-    <div class="max-w-7xl mx-auto w-full grid grid-cols-2 md:grid-cols-4 gap-8">
-      <div>
-        <h4 class="font-bold text-lg text-white">MyCommunity</h4>
-        <p class="mt-2">Making local government accountable,<br>one report at a time.</p>
-      </div>
-      <div>
-        <h6 class="font-bold mb-3">Links</h6>
-        <a class="link link-hover">About Us</a>
-        <a class="link link-hover">How It Works</a>
-        <a class="link link-hover">Success Stories</a>
-      </div>
-      <div>
-        <h6 class="font-bold mb-3">Legal</h6>
-        <a class="link link-hover">Terms of Service</a>
-        <a class="link link-hover">Privacy Policy</a>
-      </div>
-      <div>
-        <h6 class="font-bold mb-3">Contact</h6>
-        <p>hello@mycommunity.org</p>
-        <p>+233 24 000 0000</p>
+  <footer class="mt-12 w-full bg-blue-600 border-t border-base-200">
+    <div class="max-w-7xl mx-auto px-4 py-8">
+      <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+        <div class="flex items-center gap-3">
+          <img src="images/logo.png" alt="MyCommunity Logo" class="w-10 h-10 rounded-lg">
+          <div>
+            <h3 class="font-bold text-lg text-white">MyCommunity</h3>
+            <p class="text-sm text-white">Making neighborhoods better, together.</p>
+          </div>
+        </div>
+        <div class="text-sm text-white">©️ 2025 MyCommunity. All rights reserved.</div>
       </div>
     </div>
   </footer>
 
   <!-- Report Modal -->
   <dialog id="report_modal" class="modal">
-    <div class="modal-box">
+    <div class="modal-box max-w-2xl">
       <h3 class="font-bold text-2xl mb-6">Report an Issue</h3>
-      <form class="space-y-5" onsubmit="handleReportSubmit(event)">
-        <input type="text" placeholder="Issue Title (e.g. Pothole on 5th Ave)" class="input input-bordered w-full" required />
-        <textarea class="textarea textarea-bordered w-full h-32" placeholder="Describe the problem in detail..." required></textarea>
-        <div class="flex gap-3">
-          <button type="submit" class="btn btn-primary flex-1">Submit Report</button>
-          <button type="button" onclick="document.getElementById('report_modal').close()" class="btn btn-ghost">Cancel</button>
-        </div>
+      <div class="mb-6">
+        <label class="btn btn-outline btn-primary w-full">
+          Upload Photo
+          <input type="file" id="reportImage" accept="image/*" capture="environment" class="hidden" onchange="previewImage(event)" />
+        </label>
+        <img id="imagePreview" src="" alt="Preview" class="hidden w-full max-h-64 object-cover rounded-lg mt-4" />
+      </div>
+      <form onsubmit="handleReport(event)">
+        <input type="text" id="reportTitle" placeholder="Title" class="input input-bordered w-full mb-4" required />
+        <textarea id="reportDesc" class="textarea textarea-bordered w-full h-32" placeholder="Describe the issue..." required></textarea>
+        <button type="submit" class="btn btn-primary w-full mt-4">Submit Report</button>
       </form>
       <form method="dialog">
-        <button class="btn btn-ghost btn-circle absolute top-4 right-4">✕</button>
+        <button class="btn btn-circle btn-ghost absolute top-4 right-4">X</button>
       </form>
     </div>
   </dialog>
 
-  <!-- Scripts -->
-  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-  
-  <!-- Google Maps API -->
-  <script async defer src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&callback=initMap"></script>
-  
   <script>
-    // Initialize AOS
-    AOS.init({
-      duration: 800,
-      once: true,
-      offset: 50,
-    });
+    let map, userLocation = null;
 
-    // Dark Mode Toggle
-    const toggle = document.getElementById("theme-toggle");
-    const html = document.documentElement;
-
-    const savedTheme = localStorage.getItem("theme");
-    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-
-    if (savedTheme) {
-      html.setAttribute("data-theme", savedTheme);
-      if (toggle) toggle.checked = savedTheme === "dark";
-    } else if (prefersDark) {
-      html.setAttribute("data-theme", "dark");
-      if (toggle) toggle.checked = true;
-    }
-
-    if (toggle) {
-      toggle.addEventListener("change", () => {
-        const newTheme = toggle.checked ? "dark" : "light";
-        html.setAttribute("data-theme", newTheme);
-        localStorage.setItem("theme", newTheme);
-      });
-    }
-
-    // Google Maps Initialization
-    let map;
-    let markers = [];
-
-    function initMap() {
-      // Center on Accra, Ghana
-      const accra = { lat: 5.6037, lng: -0.1870 };
-      
-      const mapElement = document.getElementById('homeMap');
-      if (!mapElement) return;
-
-      map = new google.maps.Map(mapElement, {
-        zoom: 13,
-        center: accra,
-        styles: [
-          {
-            featureType: "poi",
-            elementType: "labels",
-            stylers: [{ visibility: "off" }]
-          }
-        ]
-      });
-
-      // Sample report locations in Accra
-      const reports = [
-        { 
-          position: { lat: 5.6037, lng: -0.1870 }, 
-          title: "Deep Pothole", 
-          description: "Near Accra Mall",
-          status: "warning"
+    // === 5 REALISTIC DUMMY REPORTS (only added once) ===
+    if (!localStorage.getItem("allReports") || JSON.parse(localStorage.getItem("allReports")).length === 0) {
+      const dummyReports = [
+        {
+          id: "r1",
+          title: "Massive pothole cluster on Ring Road Central",
+          desc: "Several deep potholes causing traffic jams and tire damage daily.",
+          image: "images/reports/report1.jpg",
+          lat: 5.5701, lng: -0.2194,
+          time: "4 hours ago",
+          upvotes: 68,
+          status: "urgent",
+          userId: "kwame@example.com",
+          userName: "Kwame Mensah"
         },
-        { 
-          position: { lat: 5.6140, lng: -0.2050 }, 
-          title: "Broken Street Light", 
-          description: "Very dark at night",
-          status: "urgent"
+        {
+          id: "r2",
+          title: "No streetlights on Labadi Beach Road",
+          desc: "Complete darkness after 7pm. High robbery risk reported.",
+          image: "images/reports/report2.jpg",
+          lat: 5.5750, lng: -0.1600,
+          time: "1 day ago",
+          upvotes: 51,
+          status: "urgent",
+          userId: "ama@example.com",
+          userName: "Ama Serwaa"
         },
-        { 
-          position: { lat: 5.5910, lng: -0.1790 }, 
-          title: "Illegal Dumping", 
-          description: "Growing pile of trash",
-          status: "urgent"
+        {
+          id: "r3",
+          title: "Blocked drainage causing flooding in Osu",
+          desc: "Every rain turns Ako Adjei into a river. Urgent cleaning needed!",
+          image: "images/reports/report3.jpg",
+          lat: 5.5610, lng: -0.1780,
+          time: "2 days ago",
+          upvotes: 39,
+          status: "urgent",
+          userId: "kofi@example.com",
+          userName: "Kofi Boateng"
         },
-        { 
-          position: { lat: 5.5700, lng: -0.2100 }, 
-          title: "Flooded Road", 
-          description: "Cars getting stuck",
-          status: "warning"
+        {
+          id: "r4",
+          title: "Abandoned car blocking pavement in East Legon",
+          desc: "Old Toyota has been there for 3 months. Kids can't walk safely.",
+          image: "images/reports/report4.jpg",
+          lat: 5.6350, lng: -0.1480,
+          time: "5 hours ago",
+          upvotes: 24,
+          status: "warning",
+          userId: "efia@example.com",
+          userName: "Efia Odo"
         },
-        { 
-          position: { lat: 5.6300, lng: -0.1700 }, 
-          title: "Missing Manhole Cover", 
-          description: "Extremely dangerous!",
-          status: "urgent"
+        {
+          id: "r5",
+          title: "Overflowing garbage bins at Madina Market",
+          desc: "Bins not emptied in over a week. Terrible smell and rats everywhere.",
+          image: "images/reports/report5.jpg",
+          lat: 5.6790, lng: -0.1670,
+          time: "Just now",
+          upvotes: 12,
+          status: "warning",
+          userId: "ama@example.com",
+          userName: "Ama Serwaa"
         }
       ];
+      localStorage.setItem("allReports", JSON.stringify(dummyReports));
+    }
 
-      // Add markers
-      reports.forEach(report => {
-        const marker = new google.maps.Marker({
-          position: report.position,
-          map: map,
-          title: report.title,
-          icon: {
-            path: google.maps.SymbolPath.CIRCLE,
-            scale: 10,
-            fillColor: report.status === 'urgent' ? '#ef4444' : '#f59e0b',
-            fillOpacity: 1,
-            strokeColor: '#ffffff',
-            strokeWeight: 2
-          }
-        });
+    // Default demo user (so you can submit reports & see delete buttons)
+    if (!localStorage.getItem("user")) {
+      localStorage.setItem("user", JSON.stringify({
+        name: "Demo User",
+        email: "ama@example.com",
+        avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=ama"
+      }));
+    }
 
-        const infoWindow = new google.maps.InfoWindow({
-          content: `
-            <div style="padding: 10px; max-width: 250px;">
-              <h3 style="font-weight: bold; margin-bottom: 5px;">${report.title}</h3>
-              <p style="margin-bottom: 10px;">${report.description}</p>
-              <span style="background: ${report.status === 'urgent' ? '#ef4444' : '#f59e0b'}; color: white; padding: 4px 12px; border-radius: 9999px; font-size: 12px;">
-                ${report.status === 'urgent' ? 'Urgent' : 'In Progress'}
-              </span>
-            </div>
-          `
-        });
-
-        marker.addListener('click', () => {
-          infoWindow.open(map, marker);
-        });
-
-        markers.push(marker);
-      });
-
-      // Try to get user's location
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-          (position) => {
-            const userLocation = {
-              lat: position.coords.latitude,
-              lng: position.coords.longitude
-            };
-            
-            // Only recenter if user is in Ghana (rough bounds)
-            if (userLocation.lat > 4.5 && userLocation.lat < 11.5 && 
-                userLocation.lng > -3.5 && userLocation.lng < 1.5) {
-              map.setCenter(userLocation);
-              map.setZoom(15);
-              
-              // Add user location marker
-              new google.maps.Marker({
-                position: userLocation,
-                map: map,
-                title: "Your Location",
-                icon: {
-                  path: google.maps.SymbolPath.CIRCLE,
-                  scale: 8,
-                  fillColor: '#3b82f6',
-                  fillOpacity: 1,
-                  strokeColor: '#ffffff',
-                  strokeWeight: 3
-                }
-              });
-            }
-          },
-          (error) => {
-            console.log('Geolocation error:', error);
-          }
-        );
+    // === Rest of the app logic ===
+    function updateNavbar() {
+      const user = JSON.parse(localStorage.getItem("user"));
+      const section = document.getElementById("auth-section");
+      if (user) {
+        section.innerHTML = `<div class="flex items-center gap-3">
+          <img src="${user.avatar}" class="w-10 h-10 rounded-full ring ring-primary ring-offset-2" />
+          <span class="hidden md:block">Hi, ${user.name.split(" ")[0]}!</span>
+          <button onclick="logout()" class="btn btn-ghost btn-sm">Logout</button>
+        </div>`;
+      } else {
+        section.innerHTML = `<div class="flex gap-3">
+          <a href="login.html" class="btn btn-ghost">Login</a>
+          <a href="register.html" class="btn btn-primary">Register</a>
+        </div>`;
       }
     }
 
-    // Handle report form submission
-    function handleReportSubmit(event) {
-      event.preventDefault();
-      alert('Report submitted successfully! (This is a demo)');
-      document.getElementById('report_modal').close();
-      event.target.reset();
+    function logout() { 
+      if (confirm("Logout?")) { localStorage.removeItem("user"); location.reload(); } 
     }
 
-    // Smooth scrolling for anchor links
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-      anchor.addEventListener('click', function (e) {
-        const href = this.getAttribute('href');
-        if (href !== '#' && href.startsWith('#')) {
-          e.preventDefault();
-          const target = document.querySelector(href);
-          if (target) {
-            const offsetTop = target.offsetTop - 80;
-            window.scrollTo({
-              top: offsetTop,
-              behavior: 'smooth'
-            });
-          }
-        }
-      });
+    function previewImage(e) {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = ev => {
+          const preview = document.getElementById("imagePreview");
+          preview.src = ev.target.result;
+          preview.classList.remove("hidden");
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+
+    function handleReport(e) {
+      e.preventDefault();
+      const user = JSON.parse(localStorage.getItem("user"));
+      if (!user) { alert("Please login first!"); return; }
+      if (!userLocation) { alert("Waiting for your location..."); return; }
+
+      const title = document.getElementById("reportTitle").value;
+      const desc = document.getElementById("reportDesc").value;
+      const imageFile = document.getElementById("reportImage").files[0];
+      const image = imageFile ? URL.createObjectURL(imageFile) : null;
+
+      const newReport = {
+        id: Date.now().toString(),
+        title, desc, image,
+        lat: userLocation.lat,
+        lng: userLocation.lng,
+        time: "Just now",
+        upvotes: 0,
+        status: Math.random() > 0.4 ? "urgent" : "warning",
+        userId: user.email,
+        userName: user.name
+      };
+
+      let allReports = JSON.parse(localStorage.getItem("allReports") || "[]");
+      allReports.unshift(newReport);
+      localStorage.setItem("allReports", JSON.stringify(allReports));
+
+      alert("Report submitted successfully!");
+      document.getElementById('report_modal').close();
+      e.target.reset();
+      document.getElementById("imagePreview").classList.add("hidden");
+      renderRecentReports();
+      addMarkerToMap(newReport);
+    }
+
+    function renderRecentReports() {
+      const allReports = JSON.parse(localStorage.getItem("allReports") || "[]");
+      const container = document.getElementById("recent-reports-container");
+      container.innerHTML = allReports.slice(0, 6).map(r => `
+        <div class="card bg-base-200 shadow-xl cursor-pointer hover:shadow-2xl transition" onclick="location.href='reports.html'">
+          ${r.image ? `<figure><img src="${r.image}" class="report-image w-full rounded-t-xl"/></figure>` : ''}
+          <div class="card-body">
+            <h3 class="card-title">${r.title}</h3>
+            <div class="badge ${r.status==='urgent'?'badge-error':'badge-warning'}">
+              ${r.status==='urgent'?'Urgent':'In Progress'}
+            </div>
+            <p class="text-sm opacity-80 line-clamp-2">${r.desc}</p>
+            <div class="text-xs opacity-70 mt-2">${r.time} • ${r.upvotes} Upvotes</div>
+          </div>
+        </div>
+      `).join("");
+    }
+
+    function addMarkerToMap(report) {
+      if (!report.lat || !map) return;
+      const color = report.status === "urgent" ? "#ef4444" : "#f59e0b";
+      L.marker([report.lat, report.lng], {
+        icon: L.divIcon({ 
+          html: `<div style="background:${color};width:18px;height:18px;border-radius:50%;border:4px solid white;box-shadow:0 2px 8px rgba(0,0,0,0.5);"></div>`,
+          iconSize: [26,26], iconAnchor: [13,13]
+        })
+      }).addTo(map)
+        .bindPopup(`
+          ${report.image ? `<img src="${report.image}" style="width:100%;max-height:180px;object-fit:cover;border-radius:8px;margin-bottom:8px;">` : ''}
+          <b>${report.title}</b><br>${report.desc}<br>
+          <small>${report.time} • ${report.upvotes} upvotes</small>
+        `);
+    }
+
+    function initMap() {
+      map = L.map('homeMap').setView([5.6037, -0.1870], 13);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap contributors'
+      }).addTo(map);
+
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(pos => {
+          userLocation = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+          map.setView([userLocation.lat, userLocation.lng], 15);
+          L.marker([userLocation.lat, userLocation.lng], {
+            icon: L.divIcon({
+              html: `<div style="background:#3b82f6;width:16px;height:16px;border-radius:50%;border:4px solid white;animation:pulse 2s infinite;"></div>`,
+              iconSize: [26,26], iconAnchor: [13,13]
+            })
+          }).addTo(map).bindPopup("You are here").openPopup();
+        });
+      }
+
+      const allReports = JSON.parse(localStorage.getItem("allReports") || "[]");
+      allReports.forEach(addMarkerToMap);
+    }
+
+    // Pulse animation for user location
+    const pulseStyle = document.createElement('style');
+    pulseStyle.innerHTML = `
+      @keyframes pulse {
+        0% { box-shadow: 0 0 0 0 rgba(59,130,246,0.7); }
+        70% { box-shadow: 0 0 0 12px rgba(59,130,246,0); }
+        100% { box-shadow: 0 0 0 0 rgba(59,130,246,0); }
+      }
+    `;
+    document.head.appendChild(pulseStyle);
+
+    // Init everything
+    document.addEventListener("DOMContentLoaded", () => {
+      updateNavbar();
+      initMap();
+      renderRecentReports();
     });
   </script>
 </body>
