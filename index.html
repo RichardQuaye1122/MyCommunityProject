@@ -50,7 +50,7 @@
         <li><a href="map.html">Live Map</a></li>
       </ul>
     </div>
-    <div class="navbar-end px-4" id="auth-section"></div>
+    <div class="navbar-end flex items-center gap-3 px-4" id="auth-section"></div>
   </div>
 
   <!-- Hero Section -->
@@ -213,25 +213,30 @@
     }
 
     // === Rest of the app logic ===
+    // Define logout globally
+   window.logout = function() { 
+  if (confirm("Are you sure you want to logout?")) { 
+    localStorage.removeItem("user"); 
+    window.location.href = "login.html"; 
+  } 
+};
+
+
     function updateNavbar() {
       const user = JSON.parse(localStorage.getItem("user"));
       const section = document.getElementById("auth-section");
       if (user) {
-        section.innerHTML = `<div class="flex items-center gap-3">
+        section.innerHTML = `
           <img src="${user.avatar}" class="w-10 h-10 rounded-full ring ring-primary ring-offset-2" />
           <span class="hidden md:block">Hi, ${user.name.split(" ")[0]}!</span>
           <button onclick="logout()" class="btn btn-ghost btn-sm">Logout</button>
-        </div>`;
+        `;
       } else {
-        section.innerHTML = `<div class="flex gap-3">
-          <a href="login.html" class="btn btn-ghost">Login</a>
-          <a href="register.html" class="btn btn-primary">Register</a>
-        </div>`;
+        section.innerHTML = `
+          <a href="login.html" class="btn btn-ghost btn-sm">Login</a>
+          <a href="register.html" class="btn btn-primary btn-sm">Register</a>
+        `;
       }
-    }
-
-    function logout() { 
-      if (confirm("Logout?")) { localStorage.removeItem("user"); location.reload(); } 
     }
 
     function previewImage(e) {

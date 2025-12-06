@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login – MyCommunity</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet">
+  <style>body{font-family:'Inter',sans-serif;}</style>
+</head>
+<body class="min-h-screen bg-base-200 flex items-center justify-center px-4">
+  <div class="card w-full max-w-md bg-base-100 shadow-2xl">
+    <div class="card-body">
+      <div class="text-center mb-8">
+        <img src="images/logo.png" class="w-20 h-20 mx-auto rounded-lg" />
+        <h1 class="text-3xl font-bold mt-4">Welcome Back!</h1>
+        <p class="text-base-content/70">Log in to report issues and help your community</p>
+      </div>
+
+      <form onsubmit="handleLogin(event)">
+        <label class="input input-bordered flex items-center gap-2 mb-4">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 opacity-70" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
+          <input type="email" id="email" class="grow" placeholder="Email" required />
+        </label>
+
+        <label class="input input-bordered flex items-center gap-2 mb-6">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 opacity-70" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 11c1.104 0 2-.896 2-2s-.896-2-2-2-2 .896-2 2 .896 2 2 2zm0 2c-2.67 0-8 1.335-8 4v3h16v-3c0-2.665-5.33-4-8-4z" /></svg>
+          <input type="password" id="password" class="grow" placeholder="Password" required />
+        </label>
+
+        <button type="submit" class="btn btn-primary w-full">Login</button>
+      </form>
+
+      <div class="text-center mt-6">
+        <p>Don't have an account? <a href="register.html" class="link link-primary font-bold">Register</a></p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function handleLogin(e) {
+      e.preventDefault();
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+
+      // Dummy login: accept anything ending with @gmail.com
+      if (email.includes("@") && password.length >= 4) {
+        const user = {
+          name: email.split("@")[0].charAt(0).toUpperCase() + email.split("@")[0].slice(1),
+          email: email,
+          avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${email}`
+        };
+        localStorage.setItem("user", JSON.stringify(user));
+        alert("Login successful!");
+        window.location.href = "dashboard.html";
+      } else {
+        alert("Invalid email or password!");
+      }
+    }
+  </script>
+</body>
+</html>

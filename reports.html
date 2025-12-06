@@ -23,7 +23,7 @@
         <li><a href="reports.html" class="font-bold text-primary">Reports</a></li>
       </ul>
     </div>
-    <div class="navbar-end px-4" id="auth-section"></div>
+    <div class="navbar-end flex items-center gap-3 px-4" id="auth-section"></div>
   </div>
 
   <div class="bg-gradient-to-br from-sky-600 to-blue-800 py-20 text-white">
@@ -131,23 +131,28 @@
     const currentUser = JSON.parse(localStorage.getItem("user"));
     let allReports = JSON.parse(localStorage.getItem("allReports"));
 
+    // Define logout globally
+    window.logout = function() {
+      if (confirm("Are you sure you want to logout?")) {
+        localStorage.removeItem("user");
+        location.reload();
+      }
+    };
+
     // Navbar
     function updateNavbar() {
       const section = document.getElementById("auth-section");
       if (currentUser) {
         section.innerHTML = `
-          <div class="flex items-center gap-3">
-            <img src="${currentUser.avatar}" class="w-10 h-10 rounded-full ring ring-primary ring-offset-2" />
-            <span class="hidden md:block">${currentUser.name.split(" ")[0]}</span>
-            <button onclick="logout()" class="btn btn-ghost btn-sm">Logout</button>
-          </div>`;
-      }
-    }
-
-    function logout() {
-      if (confirm("Logout?")) {
-        localStorage.removeItem("user");
-        location.reload();
+          <img src="${currentUser.avatar}" class="w-10 h-10 rounded-full ring ring-primary ring-offset-2" />
+          <span class="hidden md:block">${currentUser.name.split(" ")[0]}</span>
+          <button onclick="logout()" class="btn btn-ghost btn-sm">Logout</button>
+        `;
+      } else {
+        section.innerHTML = `
+          <a href="login.html" class="btn btn-ghost btn-sm">Login</a>
+          <a href="register.html" class="btn btn-primary btn-sm">Register</a>
+        `;
       }
     }
 
